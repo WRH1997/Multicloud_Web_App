@@ -45,7 +45,7 @@ export default function LandingPage() {
           <Typography variant="h5" sx={{
             marginBottom: 5,
           }}>
-            Form teams with your friends and compete against other teams in real-time!!!
+            Form teams with your friends and compete against other teams in real-time!!!!!
           </Typography>
           <Button
             variant="contained"
