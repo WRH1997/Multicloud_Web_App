@@ -1,21 +1,19 @@
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import firebaseClient from "./firebase";
+import {getAuth} from "firebase/auth";
 import {useState} from "react";
 
-export class Signup {
-    function
-
-    signupEmailPassword() {
-        const [email, setEmail] = useState('');
-        const [password, setPassword] = useState('');
-
-        const handleSignUp = () => {
-            firebase.auth().createUserWithEmailAndPassword(email, password)
+const
+    HandleSignUp = () => {
+        const [email,setEmail] = useState('');
+        const [password,setPassword]= useState('');
+        const performSignUp= () => {
+        const auth = getAuth();
+        auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     // Sign-up success
                     const user = userCredential.user;
                     console.log("Sign-up successful!", user);
                     // You can redirect the user to a new page or perform other actions here
+
                 })
                 .catch((error) => {
                     // Sign-up error
@@ -24,8 +22,7 @@ export class Signup {
                     console.error("Sign-up error:", errorCode, errorMessage);
                     // Handle the error and display an appropriate message to the user
                 });
-        };
-
+        }
         return (
             <div>
                 <h1>Sign Up</h1>
@@ -39,7 +36,6 @@ export class Signup {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     /><br/>
-
                     <label htmlFor="password">Password:</label>
                     <input
                         type="password"
@@ -49,14 +45,12 @@ export class Signup {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     /><br/>
-
-                    <button type="button" onClick={handleSignUp}>Sign Up</button>
+                    <button type="button" onClick={performSignUp}>Sign Up</button>
                 </form>
             </div>
         );
-    }
 }
-
+export default HandleSignUp;
 
 
 

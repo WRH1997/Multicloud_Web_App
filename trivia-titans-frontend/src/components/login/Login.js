@@ -1,5 +1,5 @@
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import firebaseClient from "./firebase";
+import firebaseClient from "../common/firebase";
 export class Login {
     function
     userLogin() {

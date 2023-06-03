@@ -1,5 +1,5 @@
 import { getAuth, signOut } from "firebase/auth";
-import firebaseClient from "./firebase";
+import firebaseClient from "../common/firebase";
 
 export class Logout {
     function
