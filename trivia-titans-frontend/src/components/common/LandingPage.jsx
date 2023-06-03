@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import React from 'react';
 import { Grid, Typography, Button } from '@mui/material';
@@ -52,6 +51,12 @@ export default function LandingPage() {
             onClick={() => navigate("/Login")}
           >
             Join Us
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/CreateTriviaGame")}
+          >
+            Admin Feature: Create Trivia Game
           </Button>
         </Grid>
       </Grid>
