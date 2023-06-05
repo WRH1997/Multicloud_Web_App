@@ -64,6 +64,12 @@ export default function LandingPage() {
           >
             Create a New User
           </Button>
+          <Button
+              variant="contained"
+              onClick={() => navigate("/Login")}
+          >
+        Login
+          </Button>
         </Grid>
       </Grid>
     </Grid>

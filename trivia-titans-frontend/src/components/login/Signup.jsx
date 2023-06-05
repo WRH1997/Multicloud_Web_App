@@ -1,13 +1,17 @@
 import {getAuth} from "firebase/auth";
 import {useState} from "react";
+import {createUserWithEmailAndPassword} from "firebase/auth";
+
 
 const
     HandleSignUp = () => {
         const [email,setEmail] = useState('');
         const [password,setPassword]= useState('');
-        const performSignUp= () => {
-        const auth = getAuth();
-        auth.createUserWithEmailAndPassword(email, password)
+        const performSignUp = () => {
+
+            console.log("FUNCTION INVOKED");
+            const auth = getAuth();
+            createUserWithEmailAndPassword(auth,email, password)
                 .then((userCredential) => {
                     // Sign-up success
                     const user = userCredential.user;
