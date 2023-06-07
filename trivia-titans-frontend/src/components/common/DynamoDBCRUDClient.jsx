@@ -5,7 +5,8 @@ const dbClient = new DynamoDBClient({ region: "us-east-1" });
 const ddbDocClient = DynamoDBDocument.from(dbClient);
 
 
-/* Example of json to lambda :
+/* Example of payload to lambda :
+key : The partition key of the table
 {
   "tableName":"<<TABLE-NAME>>",
   "operation": "UPDATE",
