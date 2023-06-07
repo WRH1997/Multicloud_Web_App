@@ -1,17 +1,9 @@
 import React from 'react';
 import {useEffect, useState} from 'react';
 import '../../themes/EditProfile.css'
-//const AWS = require('aws-sdk');
+const AWS = require("aws-sdk")
 
 const EditProfile = () => {
-
-    useEffect(() => {
-        //https://dev.to/aws-builders/dynamodb-using-aws-sdk-for-javascriptnodejs-43j1
-        //PARAMS: https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html
-        //fetch from dynamoDB
-        //...
-        //set states
-    })
 
     const [userData, setUserData] = useState({
         firstName:"",
@@ -30,6 +22,30 @@ const EditProfile = () => {
     let currProfPic = "DUMMY TEXT";
     let currEmail = "DUMMY TEXT";
     let currPhone = 1;
+
+    AWS.config = new AWS.Config();
+    AWS.config.accessKeyId = "";
+    AWS.config.secretAccessKey = "";
+    AWS.config.region = "";
+
+    const dynamoClient = new AWS.DynamoDB.DocumentClient({});
+
+    async function getUserInfo(){
+        await dynamoClient.get({
+            TableName: "dt1",
+            Key: {
+                username: "user2",
+                email: "ex2"
+            }
+        }).promise().then((data) => {
+            currFname = data.Item.fname;
+            currLname = data.Item.lname;
+            currEmail = data.Item.email;
+            currPhone = data.Item.phone;
+            currProfPic = data.Item.profPic;
+            currPwd = data.Item.password;
+        }).catch(console.error);
+    }
 
 
     const onChange = (event) => {
