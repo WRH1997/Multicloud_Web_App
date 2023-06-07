@@ -18,6 +18,23 @@ const ddbDocClient = DynamoDBDocument.from(dbClient);
     ":description": "This is updated item 1"
   }
 }
+{
+"tableName":"<<TABLE-NAME>>",
+  "operation": "CREATE",
+  "item": {
+    "id": "1",
+    "name": "Item 1",
+    "description": "This is item 1"
+  }
+}
+{
+"tableName":"<<TABLE-NAME>>",
+  "operation": "READ",
+  "key": {
+    "id": "1"
+  }
+}
+
  */
 
 exports.handler = async (event) => {
@@ -26,16 +43,16 @@ exports.handler = async (event) => {
   let response;
   switch (operation) {
     case 'CREATE':
-      response = await createItem(event.item);
+      response = await createItem(event.item,tableName);
       break;
     case 'READ':
-      response = await readItem(event.key);
+      response = await readItem(event.key,tableName);
       break;
     case 'UPDATE':
-      response = await updateItem(event.key, event.updateExpression, event.expressionAttributeValues);
+      response = await updateItem(event.key, event.updateExpression, event.expressionAttributeValues,tableName);
       break;
     case 'DELETE':
-      response = await deleteItem(event.key);
+      response = await deleteItem(event.key,tableName);
       break;
     default:
       response = `Invalid operation: ${event.operation}`;
@@ -44,18 +61,18 @@ exports.handler = async (event) => {
   return response;
 };
 
-async function createItem(item) {
+async function createItem(item,tableName) {
   const params = {
-    TableName: 'your-table-name',
+    TableName: tableName,
     Item: item,
   };
 
   return ddbDocClient.put(params);
 }
 
-async function readItem(key) {
+async function readItem(key,tableName) {
   const params = {
-    TableName: 'your-table-name',
+    TableName: tableName,
     Key: key,
   };
 
@@ -63,9 +80,9 @@ async function readItem(key) {
   return Item;
 }
 
-async function updateItem(key, updateExpression, expressionAttributeValues) {
+async function updateItem(key, updateExpression, expressionAttributeValues,tableName) {
   const params = {
-    TableName: 'your-table-name',
+    TableName: tableName,
     Key: key,
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: expressionAttributeValues,
@@ -75,9 +92,9 @@ async function updateItem(key, updateExpression, expressionAttributeValues) {
   return ddbDocClient.update(params);
 }
 
-async function deleteItem(key) {
+async function deleteItem(key,tableName) {
   const params = {
-    TableName: 'your-table-name',
+    TableName: tableName,
     Key: key,
   };
 
