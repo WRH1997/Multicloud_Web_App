@@ -26,6 +26,8 @@ const EditProfile = () => {
     let currEmail = "DUMMY TEXT";
     let currPhone = 1;
 
+    //I am having trouble getting AWS to read my ~/.aws/config and ~/.aws/credentials files
+    //so, I am hard-coding them for now
     AWS.config.update({
         credentials: new AWS.Credentials('AKIAR2VYCU2GQKVNVKGF', 'aOQlTUbsnXQwFqVscaIE+7gmd3dAaI8tN2HSvwl8'),
         region: 'us-east-1'
