@@ -26,7 +26,7 @@ h3 {
     box-shadow: 4px 7px #585858;
 }
 
-.fname, .lname, .email, .password, .username, .email, .phone, .profPic{
+.firstName, .lastName, .email, .password, .username, .email, .phone, .profilePic{
     float: right;
     margin-right: 20px;
     width: 40vh;
