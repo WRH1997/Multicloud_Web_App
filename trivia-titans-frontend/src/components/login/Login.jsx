@@ -1,6 +1,6 @@
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import {Button} from "@mui/material";
-import React from "react";
+import React, {useState} from "react";
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -49,11 +49,11 @@ const Login = () => {
                 <button type='submit'>Login</button>
             </div>
             <div>
-            <Button>
+            <button
                 variant="contained"
-                onClick={gmailUserLogin}
+                onClick={gmailUserLogin} >
                 Login with Gmail
-            </Button>
+            </button>
             </div>
         </form>
     )
