@@ -43,6 +43,7 @@ const
                     };
                     const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient",jsonPayload);
                     console.log("Sign-up successful!", user);
+
                     // You can redirect the user to a new page or perform other actions here
                 })
                 .catch((error) => {

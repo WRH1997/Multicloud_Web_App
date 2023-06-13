@@ -1,15 +1,13 @@
 import { getAuth, signOut } from "firebase/auth";
-import firebaseClient from "../common/firebase";
 
-export class Logout {
-    function
-
-    logoutUser() {
+import firebase from "../common/firebase";
+const Logout=() => {
         const auth = getAuth();
         signOut(auth).then(() => {
+                console.log("USER LOGOUT!!!")
             // Sign-out successful.
         }).catch((error) => {
             // An error happened.
         });
-    }
 }
+export default Logout;

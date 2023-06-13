@@ -15,10 +15,10 @@ const invokeLambdaFunction = async (functionName,payload) => {
             FunctionName: functionName,
             Payload: JSON.stringify(payload),
         };
-
-        const {Payload} = await lambdaClient.send(new InvokeCommand(params));
+        const Payload = await lambdaClient.send(new InvokeCommand(params));
         console.log('Lambda function output:', Payload);
-        console.log(lambdaClientCredentials);
+        const asciiDecoder = new TextDecoder('ascii');
+        return JSON.parse(asciiDecoder.decode(Payload.Payload));
     } catch (err) {
         console.error(err);
     }
