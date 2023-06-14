@@ -1,10 +1,11 @@
 import { getAuth, signInWithPopup,signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
-import React, {useEffect, useState} from "react";
-import {Modal, Paper} from '@mui/material';
-import invokeLambda from "../common/InvokeLambda";
+import React, {useState} from "react";
+import {Modal, Paper, Box, Typography, Grid, Container, InputAdornment, IconButton} from '@mui/material';import invokeLambda from "../common/InvokeLambda";
 import {Button, TextField} from "@mui/material";
 import invokeLambdaFunction from "../common/InvokeLambda";
 import Logout from "./Logout";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -145,29 +146,73 @@ const Login = () => {
         setModalIsOpen(false);
     };
     return (
-        <div>
-        <form onSubmit={handleLogin}>
-            <h2>Login</h2>
+        <Container component="main" maxWidth="xs">
             <div>
-                <label>Email: </label>
-                <input type='text' name='email' onChange={e => setEmail(e.target.value)} />
+                <Typography component="h1" variant="h5">
+                    Login
+                </Typography>
+                <form onSubmit={handleLogin}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                                onChange={e => setEmail(e.target.value)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type='password'
+                                id="password"
+                                autoComplete="current-password"
+                                onChange={e => setPassword(e.target.value)}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                edge="end"
+                                            >
+                                                {password.showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    )
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                    >
+                        Login
+                    </Button>
+                    <Grid container justify="flex-end">
+                        <Grid item>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={gmailUserLogin}
+                            >
+                                Login with Gmail
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </form>
             </div>
             <div>
-                <label>Password: </label>
-                <input type='password' name='password' onChange={e => setPassword(e.target.value)} />
-            </div>
-            <div>
-                <button type='submit' >Login</button>
-
-            </div>
-            <div>
-                <button
-                    onClick={gmailUserLogin} >
-                    Login with Gmail
-                </button>
-            </div>
-        </form>
-    <div>
                 <Modal
                     open={modalIsOpen}
                     onClose={() => setModalIsOpen(false)}>
@@ -209,18 +254,18 @@ const Login = () => {
                                 margin="normal"
                             />
                             <TextField
-                                name="question2"
+                                name="question3"
                                 label="Secret Question 3"
-                                value={formData.question2}
+                                value={formData.question3}
                                 onChange={handleChange}
                                 fullWidth
                                 margin="normal"
                             />
                             <TextField
-                                name="answer2"
+                                name="answer3"
                                 label="Answer 3"
                                 type="password"
-                                value={formData.answer2}
+                                value={formData.answer3}
                                 onChange={handleChange}
                                 fullWidth
                                 margin="normal"
@@ -256,7 +301,7 @@ const Login = () => {
                     </Paper>
                 </Modal>
             </div>
-        </div>
-    )
-};
-export default Login;
+        </Container>
+);
+            };
+export default Login
