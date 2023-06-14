@@ -58,6 +58,18 @@ export default function LandingPage() {
           >
             Admin Feature: Create Trivia Game
           </Button>
+          <Button
+              variant="contained"
+              onClick={() => navigate("/Signup")}
+          >
+            Create a New User
+          </Button>
+          <Button
+              variant="contained"
+              onClick={() => navigate("/Login")}
+          >
+        Login
+          </Button>
         </Grid>
       </Grid>
     </Grid>
