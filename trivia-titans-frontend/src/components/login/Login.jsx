@@ -6,7 +6,6 @@ import invokeLambdaFunction from "../common/InvokeLambda";
 import Logout from "./Logout";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import subscribeEmailToSNSTopic from "../common/subscribeSNSTopic";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -142,7 +141,6 @@ const Login = () => {
         }
         const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient",jsonPayload);
         console.log("MFA Registered for user !", userEmail);
-        await subscribeEmailToSNSTopic(userEmail);
         setModalIsOpen(false);
     };
     return (
