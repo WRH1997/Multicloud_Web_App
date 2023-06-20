@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+./wl392785_secrets.csv
+*/wl392785_secrets.csv
+wl392785_secrets.csv
