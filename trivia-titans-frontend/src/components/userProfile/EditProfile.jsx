@@ -88,11 +88,11 @@ const EditProfile = () => {
 
     return(
         <center>
-            <div class='form-div'>
+            <div className='form-div' class='form-div'>
                 <h3>Edit User Profile</h3>
                 <form onSubmit={submit}>
                     <label htmlFor='firstName' className='form-lbl'>First name: </label>
-                    <input type='text' name='firstName' className='firstName' onChange={onChange} disbaled={'true'} placeholder={currFname}></input>
+                    <input type='text' name='firstName' className='firstName' onChange={onChange} disabled={true} placeholder={currFname}></input>
                     <br></br><br></br>
                     <label htmlFor='lastName' className='form-lbl'>Last name: </label>
                     <input type='text' name='lastName' className='lastName' onChange={onChange} placeholder={currLname}></input>
@@ -107,10 +107,10 @@ const EditProfile = () => {
                     <input type='text' name='profilePic' className='profilePic' onChange={onChange} placeholder={currProfPic}></input>
                     <br></br><br></br>
                     <label htmlFor='email' className='form-lbl'>Email Address: </label>
-                    <input type='text' name='email' className='email' onChange={onChange} disbaled={'true'} placeholder={currEmail}></input>
+                    <input type='text' name='email' className='email' onChange={onChange} disabled={true} placeholder={currEmail}></input>
                     <br></br><br></br>
                     <label htmlFor='phone' className='form-lbl'>Phone Number: </label>
-                    <input type='text' name='phone' className='phone' onChange={onChange} placeholder={currPhone}></input>
+                    <input type='text' name='phone' className='phone' onChange={onChange} placeholder={currPhone.toString()}></input>
                     <br></br><br></br>
                     <button type='submit' className='submit'>Submit</button>
                 </form>
