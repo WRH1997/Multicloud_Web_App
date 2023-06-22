@@ -2,7 +2,6 @@ import {getAuth} from "firebase/auth";
 import {useState} from "react";
 import {createUserWithEmailAndPassword} from "firebase/auth";
 import invokeLambdaFunction from "../common/InvokeLambda";
-import subscribeEmailToSNSTopic from "../common/subscribeSNSTopic";
 
 const
     HandleSignUp = () => {
@@ -43,7 +42,6 @@ const
                         }
                     };
                     const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
-                    await subscribeEmailToSNSTopic(user.email);
                     console.log("Sign-up successful!", user);
 
                     // You can redirect the user to a new page or perform other actions here

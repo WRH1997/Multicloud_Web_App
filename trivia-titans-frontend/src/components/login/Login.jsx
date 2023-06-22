@@ -111,8 +111,20 @@ const Login = () => {
                 userEmail: userEmail,
             }
         };
-        const expectedAnswer = await invokeLambda("lambdaDynamoDBClient", jsonPayload).secretAnswer1;
-        if(answer === expectedAnswer ) {
+        const selectedQuestion = Math.floor(Math.random() * 3);
+        let expectedAnswer = '';
+        switch(selectedQuestion) {
+            case 1:
+                expectedAnswer = await invokeLambda("lambdaDynamoDBClient", jsonPayload).secretAnswer1;
+                break;
+            case 2:
+                expectedAnswer = await invokeLambda("lambdaDynamoDBClient", jsonPayload).secretAnswer2;
+                break;
+            case 3:
+                expectedAnswer = await invokeLambda("lambdaDynamoDBClient", jsonPayload).secretAnswer3;
+                break;
+        }
+       if(answer === expectedAnswer ) {
             console.log ( "MFA USER LOGIN SUCCESS ");
         }
         else
