@@ -29,6 +29,7 @@
     "buffer": "^6.0.3",
     "firebase": "^9.22.1",
     "firebase-auth": "^0.1.2",
+    "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "os": "^0.1.2",
     "path": "^0.12.7",
