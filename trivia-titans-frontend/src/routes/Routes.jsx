@@ -7,6 +7,7 @@ import EditProfile from "../components/userProfile/EditProfile"
 import HandleSignUp from "../components/login/Signup";
 import Logout from "../components/login/Logout";
 import Login from "../components/login/Login";
+import QuestForm from "components/admin/QuestForm";
 
 const AppRoutes = () => {
     return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
             <Route path='SignUp' element={<HandleSignUp/>} />
             <Route path='Login' element={<Login/>} />
             <Route path='Logout' element={<Logout/>} />
+            <Route path='CreateTriviaQuestions' element={<QuestForm/>} />
         </Routes>
     );
 };
