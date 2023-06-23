@@ -7,7 +7,7 @@ import EditProfile from "../components/userProfile/EditProfile"
 import HandleSignUp from "../components/login/Signup";
 import Logout from "../components/login/Logout";
 import Login from "../components/login/Login";
-import TeamPage from "../components/team/team";
+import TeamPage from "../components/team/teamStats";
 
 const AppRoutes = () => {
     return (

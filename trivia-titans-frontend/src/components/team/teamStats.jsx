@@ -7,9 +7,12 @@ import {getAuth} from "firebase/auth";
 
 const TeamPage = () => {
     const [open, setOpen] = useState(false);
+    const [isTeamPlayer, setIsTeamPlayer] = useState(false);
     const [email, setEmail] = useState("");
     const [teamName, setTeamName] = useState("");
     const [createTeamOpen, setCreateTeamOpen] = useState(false);
+    let teamData = {};
+    let teamMembers = null;
     const handleTeamInviteDialogOpen = () => {
         setOpen(true);
     };
@@ -36,6 +39,7 @@ const TeamPage = () => {
                 totalScore: 0
             }
         };
+        invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
         console.log(`Joining team ${teamName} as ADMIN`);
         const auth = getAuth();
         const jsonPayload2 = {
@@ -59,6 +63,24 @@ const TeamPage = () => {
         setEmail("");
         setOpen(false);
     };
+    const fetchCurrentTeamData = () =>
+    {
+
+        const auth = getAuth();
+        const jsonPayload = {
+            tableName: "teamMembers",
+            operation: "READ",
+            key: {
+                playerEmail: auth.currentUser.email,
+            }
+        };
+        teamData = invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
+        console.log(teamData);
+    }
+
+    function removeTeamMember(member) {
+
+    }
 
     return (
         <div>
@@ -124,7 +146,31 @@ const TeamPage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            {isTeamPlayer && (
+                <div className="team-stats">
+                    <p><strong>Score:</strong> {teamData.totalScore}</p>
+                    <p><strong>Win/Loss Ratio:</strong> teamData.winLossRatio</p>
+                    <p><strong>Total Games:</strong> teamData.winLossRatio</p>
+                    <h3>Team Members:</h3>
+                    {teamMembers.map((member) => (
+                        <div key={member}>
+                            <span>{member}</span>
+                            <button onClick={() => removeTeamMember(member)}>
+                                Remove from Team
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
+            {!isTeamPlayer && (
+                <div className="team-prompt">
+                    <p><strong>Please join a team or create one to view Team Statistics, You can only join teams Upon invitation</p>
+                    ))}
+                </div>
+            )}
+
         </div>
+
     );
 };
 export default TeamPage;
