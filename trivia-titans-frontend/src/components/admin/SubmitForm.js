@@ -1,6 +1,7 @@
 import { Button, TextField, FormControl, FormLabel, FormGroup, Grid } from '@mui/material';
 import { useState } from 'react';
 import AWS from 'aws-sdk';
+import { v4 as uuidv4 } from 'uuid';
 
 
 const SubmitForm = () => {
@@ -51,6 +52,7 @@ const SubmitForm = () => {
       tableName: "triviaquestion",
       operation: "CREATE",
       item: {
+        id: uuidv4(),
         text: quesText,
         category: categVal,
         difficulty_level: diffVal,
@@ -58,24 +60,24 @@ const SubmitForm = () => {
       }
     };
 
-    // AWS.config.update({
-    //   accessKeyId: 'AKIA5V5W2TFS6EEFZWMW',
-    //   secretAccessKey: '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',
-    //   region: 'us-east-1'
-    // });
+    AWS.config.update({
+      accessKeyId: 'AKIA5V5W2TFS6EEFZWMW',
+      secretAccessKey: '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',
+      region: 'us-east-1'
+    });
 
-    // const params = {
-    //   FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:lambdaDynamoDBClient',
-    //   Payload: JSON.stringify(data)
-    // };
-    // const lambda = new AWS.Lambda();
+    const params = {
+      FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:lambdaDynamoDBClient',
+      Payload: JSON.stringify(data)
+    };
+    const lambda = new AWS.Lambda();
 
-    // try {
-    //   const response = await lambda.invoke(params).promise();
-    //   console.log(response);
-    // } catch (error) {
-    //   console.log('Error:', error);
-    // }
+    try {
+      const response = await lambda.invoke(params).promise();
+      console.log(response);
+    } catch (error) {
+      console.log('Error:', error);
+    }
     console.log(data);
   };
 
