@@ -10,7 +10,7 @@ const QuestForm = () => {
     }
 
     return (
-        <div>
+        <div style={{ display: 'block', textAlign: 'center', padding: '20px' }}>
             <div>
                 {
                     showForm?

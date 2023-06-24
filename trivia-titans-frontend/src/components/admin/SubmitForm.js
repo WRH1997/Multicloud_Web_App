@@ -1,5 +1,7 @@
 import { Button, TextField, FormControl, FormLabel, FormGroup, Grid } from '@mui/material';
 import { useState } from 'react';
+import AWS from 'aws-sdk';
+
 
 const SubmitForm = () => {
   const difficulty_level = ['Hard', 'Medium', 'Easy'];
@@ -42,21 +44,43 @@ const SubmitForm = () => {
     setVerdict(updatedVerdict);
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const data = {
-      text: quesText,
-      category: categVal,
-      difficulty_level: diffVal,
-      options: inputs.map((input, index) => ({text: input, verdict: verdict[index]}))
+      tableName: "triviaquestion",
+      operation: "CREATE",
+      item: {
+        text: quesText,
+        category: categVal,
+        difficulty_level: diffVal,
+        options: inputs.map((input, index) => ({text: input, verdict: verdict[index]}))
+      }
     };
 
+    // AWS.config.update({
+    //   accessKeyId: 'AKIA5V5W2TFS6EEFZWMW',
+    //   secretAccessKey: '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',
+    //   region: 'us-east-1'
+    // });
+
+    // const params = {
+    //   FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:lambdaDynamoDBClient',
+    //   Payload: JSON.stringify(data)
+    // };
+    // const lambda = new AWS.Lambda();
+
+    // try {
+    //   const response = await lambda.invoke(params).promise();
+    //   console.log(response);
+    // } catch (error) {
+    //   console.log('Error:', error);
+    // }
     console.log(data);
   };
 
     return (
-        <FormControl component="form" onSubmit={handleSubmit}>
+        <FormControl component="form" onSubmit={handleSubmit} style={{ backgroundColor: 'white', padding: '20px' }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <FormLabel component="legend">Create Question</FormLabel>
