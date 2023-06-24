@@ -4,6 +4,7 @@ import '../../themes/EditProfile.css';
 const AWS = require("aws-sdk");
 
 //CHANGE THIS TO CORRECT AWS CREDS FILE + ADD IT TO GITIGNORE
+// @ts-ignore
 const jsonData = require("./wl392785_secrets.json");
 
 const EditProfile = () => {
