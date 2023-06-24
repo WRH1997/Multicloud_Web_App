@@ -1,11 +1,10 @@
 import React from 'react';
 import {useEffect, useState, useMemo} from 'react';
 import '../../themes/EditProfile.css';
+import {fromCognitoIdentityPool} from "@aws-sdk/credential-provider-cognito-identity";
+import {CognitoIdentityClient} from "@aws-sdk/client-cognito-identity";
 const AWS = require("aws-sdk");
 
-//CHANGE THIS TO CORRECT AWS CREDS FILE + ADD IT TO GITIGNORE
-// @ts-ignore
-const jsonData = require("./wl392785_secrets.json");
 
 const EditProfile = () => {
 
@@ -19,14 +18,11 @@ const EditProfile = () => {
     });
 
 
-    let accessKey = jsonData['AKI'];
-    let secretKey = jsonData['SAK'];
-    console.log(accessKey+" "+secretKey);
-
-    AWS.config.update({
-        credentials: new AWS.Credentials(accessKey, secretKey),
-        region: 'us-east-2'
+    AWS.config.region = 'us-east-1';
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-east-1:79432309-bc2e-447e-86b7-84c5b115e0e0',
     });
+
 
     const dynamoClient = new AWS.DynamoDB.DocumentClient({});
 
@@ -82,7 +78,7 @@ const EditProfile = () => {
 
     return(
         <center>
-            <div className='form-div' class='form-div'>
+            <div className='form-div'>
                 <h3>Edit User Profile</h3>
                 <form onSubmit={submit}>
                     <label htmlFor='displayName' className='form-lbl'>Display Name: </label>
