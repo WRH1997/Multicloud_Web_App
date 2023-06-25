@@ -70,6 +70,12 @@ export default function LandingPage() {
           >
         Login
           </Button>
+          <Button
+              variant="contained"
+              onClick={() => navigate("/ManageTeams")}
+          >
+            Team Management
+          </Button>
         </Grid>
       </Grid>
     </Grid>

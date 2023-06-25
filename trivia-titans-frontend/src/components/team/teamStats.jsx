@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, {useContext, useState} from "react";
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import notifyJoinTeam from "./NotifyJoinTeam";
 import invokeLambdaFunction from "../common/InvokeLambda";
 import {getAuth} from "firebase/auth";
+import {AuthContext} from "../common/AuthContext";
 
 const TeamPage = () => {
+    const currentUser = useContext(AuthContext);
+    console.log(currentUser);
     const [open, setOpen] = useState(false);
     const [isTeamPlayer, setIsTeamPlayer] = useState(false);
     const [email, setEmail] = useState("");
@@ -164,8 +167,7 @@ const TeamPage = () => {
             )}
             {!isTeamPlayer && (
                 <div className="team-prompt">
-                    <p><strong>Please join a team or create one to view Team Statistics, You can only join teams Upon invitation</p>
-                    ))}
+                    <p><strong> Please join a team or create one to view Team Statistics, You can only join teams Upon invitation</strong></p>
                 </div>
             )}
 

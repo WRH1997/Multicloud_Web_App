@@ -8,6 +8,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const Login = () => {
+
   const [formData, setFormData] = useState({
         question1: '',
         answer1: '',
@@ -23,6 +24,7 @@ const Login = () => {
     const [secretQuestion, setSecretQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [mfaModalIsOpen, setMfaModalIsOpen] = useState(false);
+    const selectedQuestion = Math.floor(Math.random() * 2)+1;
     const handleLogin = async (e) => {
         e.preventDefault();
         const auth = getAuth();
@@ -50,7 +52,6 @@ const Login = () => {
                 //const token = credential.accessToken;
                 const isMFAUser = await checkMfaUser(result.user);
                 setUserEmail(result.user.email);
-                console.log(isMFAUser);
             if (!isMFAUser) {
                     openModal();
                 }
@@ -76,9 +77,7 @@ const Login = () => {
             }
         };
         const lambdaResponse = (await invokeLambda("lambdaDynamoDBClient", jsonPayload));
-        console.log(lambdaResponse);
         return !(lambdaResponse==null);
-
     }
     async function handleMfaLogin(user)
     {
@@ -89,8 +88,20 @@ const Login = () => {
                 userEmail: user.email,
             }
         };
-        const question = await invokeLambda("lambdaDynamoDBClient", jsonPayload).secretQuestion1;
-        setSecretQuestion(question);
+        let expectedQuestion ='';
+        const question = await invokeLambda("lambdaDynamoDBClient", jsonPayload);
+        switch(selectedQuestion) {
+            case 1:
+                expectedQuestion = question.secretQuestion1;
+                break;
+            case 2:
+                expectedQuestion = question.secretQuestion2;
+                break;
+            case 3:
+                expectedQuestion = question.secretQuestion3;
+                break;
+        }
+        setSecretQuestion(expectedQuestion);
         setMfaModalIsOpen(true);
     }
     const handleChange = async (e) => {
@@ -111,19 +122,21 @@ const Login = () => {
                 userEmail: userEmail,
             }
         };
-        const selectedQuestion = Math.floor(Math.random() * 3);
+        const userMfaData = await invokeLambda("lambdaDynamoDBClient", jsonPayload);
         let expectedAnswer = '';
         switch(selectedQuestion) {
             case 1:
-                expectedAnswer = await invokeLambda("lambdaDynamoDBClient", jsonPayload).secretAnswer1;
+                expectedAnswer = userMfaData.secretAnswer1;
                 break;
             case 2:
-                expectedAnswer = await invokeLambda("lambdaDynamoDBClient", jsonPayload).secretAnswer2;
+                expectedAnswer = userMfaData.secretAnswer2;
                 break;
             case 3:
-                expectedAnswer = await invokeLambda("lambdaDynamoDBClient", jsonPayload).secretAnswer3;
+                expectedAnswer = userMfaData.secretAnswer3;
                 break;
         }
+        console.log(answer,expectedAnswer,selectedQuestion);
+        console.log(await invokeLambda("lambdaDynamoDBClient", jsonPayload));
        if(answer === expectedAnswer ) {
             console.log ( "MFA USER LOGIN SUCCESS ");
         }
@@ -149,7 +162,6 @@ const Login = () => {
                 secretAnswer3: formData.answer3,
                 type: "USER"
             }
-
         }
         const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient",jsonPayload);
         console.log("MFA Registered for user !", userEmail);
