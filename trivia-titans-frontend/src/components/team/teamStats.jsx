@@ -66,15 +66,14 @@ const TeamPage = () => {
         setEmail("");
         setOpen(false);
     };
-    const fetchCurrentTeamData = () =>
+    const fetchCurrentMemberData = () =>
     {
-
         const auth = getAuth();
         const jsonPayload = {
             tableName: "teamMembers",
             operation: "READ",
             key: {
-                playerEmail: auth.currentUser.email,
+                playerEmail: auth.currentUser.email
             }
         };
         teamData = invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
@@ -176,3 +175,4 @@ const TeamPage = () => {
     );
 };
 export default TeamPage;
+

@@ -13,7 +13,7 @@ export default async function notifyJoinTeam(player,team) {
     const params = {
 
         TopicArn: 'arn:aws:sns:us-east-1:940444391781:JoinTeam', // Replace with your Topic ARN
-        Message: 'Player has joined new team', // Replace with your message
+        Message: 'Player is invited to team', // Replace with your message
         MessageAttributes: {
             'playerName': {
                 DataType: 'String', // The type of the attribute, can be 'String', 'Number', 'Binary', etc.
