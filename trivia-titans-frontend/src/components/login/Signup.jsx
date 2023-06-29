@@ -24,11 +24,11 @@ const
         const performSignUp = () => {
             const auth = getAuth();
             createUserWithEmailAndPassword(auth,email, password)
-                .then((userCredential) => {
+                .then(async (userCredential) => {
                     // Sign-up success
                     const user = userCredential.user;
                     const jsonPayload = {
-                        tableName:"userLoginInfo",
+                        tableName: "userLoginInfo",
                         operation: "CREATE",
                         item: {
                             userEmail: user.email,
@@ -38,10 +38,10 @@ const
                             secretAnswer2: formData.answer2,
                             secretQuestion3: formData.question3,
                             secretAnswer3: formData.answer3,
-                            type:"USER"
+                            type: "USER"
                         }
                     };
-                    const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient",jsonPayload);
+                    const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
                     console.log("Sign-up successful!", user);
 
                     // You can redirect the user to a new page or perform other actions here

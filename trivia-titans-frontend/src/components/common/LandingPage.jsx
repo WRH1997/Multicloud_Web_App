@@ -54,9 +54,9 @@ export default function LandingPage() {
           </Button>
           <Button
             variant="contained"
-            onClick={() => navigate("/CreateTriviaGame")}
+            onClick={() => navigate("/ConfigureTriviaGames")}
           >
-            Admin Feature: Create Trivia Game
+            Manage Trivia Games
           </Button>
           <Button
               variant="contained"
@@ -69,6 +69,12 @@ export default function LandingPage() {
               onClick={() => navigate("/Login")}
           >
         Login
+          </Button>
+          <Button
+              variant="contained"
+              onClick={() => navigate("/ManageTeams")}
+          >
+            Team Management
           </Button>
         </Grid>
       </Grid>
