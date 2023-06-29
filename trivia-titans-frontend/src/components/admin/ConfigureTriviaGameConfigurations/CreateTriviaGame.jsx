@@ -251,7 +251,7 @@ const ListOfFilteredQuestions = ({ triviaQuestions, searchTerm, handleQuestionTo
     let filteredTriviaQuestions = [];
     if (triviaQuestions && triviaQuestions.length > 0) {
       filteredTriviaQuestions = triviaQuestions.filter((triviaQuestion) =>
-        triviaQuestion.question_text.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        triviaQuestion.text.toLowerCase().includes(searchTerm.toLowerCase()) || 
         triviaQuestion.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
         triviaQuestion.difficulty_level.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -263,7 +263,7 @@ const ListOfFilteredQuestions = ({ triviaQuestions, searchTerm, handleQuestionTo
           return (
             <ListItem key={triviaQuestion.id} sx={{ paddingLeft: 0 }}>
               <ListItemText
-                primary={<Typography>{triviaQuestion.question_text}</Typography>}
+                primary={<Typography>{triviaQuestion.text}</Typography>}
                 secondary={triviaQuestion.category + " | " + triviaQuestion.difficulty_level}
               />
   
