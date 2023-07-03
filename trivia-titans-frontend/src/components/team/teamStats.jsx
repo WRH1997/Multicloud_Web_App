@@ -42,7 +42,7 @@ const TeamPage = () => {
                 totalScore: 0
             }
         };
-        invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
+        const teamData=invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
         console.log(`Joining team ${teamName} as ADMIN`);
         const auth = getAuth();
         const jsonPayload2 = {
@@ -57,6 +57,7 @@ const TeamPage = () => {
         const lambdaResponse=invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
         setTeamName("");
         setCreateTeamOpen(false);
+        setIsTeamPlayer(true);
     }
 
     const sendEmailInvite = () => {
@@ -66,7 +67,7 @@ const TeamPage = () => {
         setEmail("");
         setOpen(false);
     };
-    const fetchCurrentMemberData = () =>
+    const fetchCurrentMemberTeamData = () =>
     {
         const auth = getAuth();
         const jsonPayload = {
@@ -81,6 +82,7 @@ const TeamPage = () => {
     }
 
     function removeTeamMember(member) {
+
 
     }
 

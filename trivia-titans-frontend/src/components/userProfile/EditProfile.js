@@ -1,8 +1,7 @@
 import React from 'react';
-import {useEffect, useState, useMemo} from 'react';
+import {useState} from 'react';
 import '../../themes/EditProfile.css';
-import {fromCognitoIdentityPool} from "@aws-sdk/credential-provider-cognito-identity";
-import {CognitoIdentityClient} from "@aws-sdk/client-cognito-identity";
+
 const AWS = require("aws-sdk");
 
 
