@@ -1,13 +1,15 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import notifyJoinTeam from "./NotifyJoinTeam";
 import invokeLambdaFunction from "../common/InvokeLambda";
 import {getAuth} from "firebase/auth";
 import {AuthContext} from "../common/AuthContext";
+import {useNavigate} from "react-router";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
+    const navigate = useNavigate();
     console.log(currentUser);
     const [open, setOpen] = useState(false);
     const [isTeamPlayer, setIsTeamPlayer] = useState(false);
@@ -16,6 +18,17 @@ const TeamPage = () => {
     const [createTeamOpen, setCreateTeamOpen] = useState(false);
     let teamData = {};
     let teamMembers = null;
+    useEffect(() => {
+        if (!currentUser) {
+            // if user not logged in, navigate to login
+            navigate("/login");
+        }
+    }, [currentUser, navigate]);
+    if (!currentUser) {
+        // render nothing if user not logged in
+        return null;
+    }
+
     const handleTeamInviteDialogOpen = () => {
         setOpen(true);
     };
@@ -42,7 +55,7 @@ const TeamPage = () => {
                 totalScore: 0
             }
         };
-        const teamData=invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
+        invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
         console.log(`Joining team ${teamName} as ADMIN`);
         const auth = getAuth();
         const jsonPayload2 = {

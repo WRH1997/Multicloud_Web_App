@@ -6,6 +6,9 @@ import invokeLambdaFunction from "../common/InvokeLambda";
 import Logout from "./Logout";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import {useNavigate} from "react-router";
+const { from } = location.state || { from: { pathname: "/" } };
+
 
 const Login = () => {
 
@@ -30,8 +33,9 @@ const Login = () => {
         const auth = getAuth();
         try {
             await signInWithEmailAndPassword(auth,email,password);
-
+            const navigate = useNavigate();
             console.log("user signed in successfully");
+            navigate(from);
             // user logged in
         } catch (error) {
             console.error(error);
