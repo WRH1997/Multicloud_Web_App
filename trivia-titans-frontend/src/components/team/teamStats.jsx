@@ -10,7 +10,6 @@ import {useNavigate} from "react-router";
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
     const navigate = useNavigate();
-    console.log(currentUser);
     const [open, setOpen] = useState(false);
     const [isTeamPlayer, setIsTeamPlayer] = useState(false);
     const [email, setEmail] = useState("");
@@ -42,8 +41,7 @@ const TeamPage = () => {
     const handleCreateTeamDialogClose = () => {
         setCreateTeamOpen(false);
     };
-    const createNewTeam = () =>
-    {
+    const createNewTeam = async () => {
         console.log(`creating new team with name ${teamName}`);
         const jsonPayload = {
             tableName: "teamStats",
@@ -55,7 +53,7 @@ const TeamPage = () => {
                 totalScore: 0
             }
         };
-        invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
+        await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
         console.log(`Joining team ${teamName} as ADMIN`);
         const auth = getAuth();
         const jsonPayload2 = {
@@ -64,10 +62,10 @@ const TeamPage = () => {
             item: {
                 playerEmail: auth.currentUser.email,
                 teamName: teamName,
-                teamPermission : 'ADMIN'
+                teamPermission: 'ADMIN'
             }
         };
-        const lambdaResponse=invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
+        await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
         setTeamName("");
         setCreateTeamOpen(false);
         setIsTeamPlayer(true);
@@ -76,23 +74,19 @@ const TeamPage = () => {
     const sendEmailInvite = () => {
         // Add your code here to handle the invite
         console.log(`Invitation sent to: ${email}`);
-        notifyJoinTeam(email,'TestTeam');
+        notifyJoinTeam(email, 'TestTeam');
         setEmail("");
         setOpen(false);
     };
-    const fetchCurrentMemberTeamData = () =>
-    {
-        const auth = getAuth();
-        const jsonPayload = {
-            tableName: "teamMembers",
-            operation: "READ",
-            key: {
-                playerEmail: auth.currentUser.email
-            }
-        };
-        teamData = invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
-        console.log(teamData);
+    const fetchCurrentMemberTeamData = async () => {
+        const teamPlayerData = fetchCurrentMemberTeamData(currentUser);
+        if(teamPlayerData) {
+            setIsTeamPlayer(true);
+            setTeamName(teamData.teamName);
+        }
+    return teamPlayerData;
     }
+    fetchCurrentMemberTeamData();
 
     function removeTeamMember(member) {
 
@@ -104,7 +98,7 @@ const TeamPage = () => {
             <Button
                 variant="contained"
                 color="primary"
-                startIcon={<AddIcon />}
+                startIcon={<AddIcon/>}
                 onClick={handleTeamInviteDialogOpen}
             >
                 Invite Players to team
@@ -112,11 +106,12 @@ const TeamPage = () => {
             <Button
                 variant="contained"
                 color="primary"
-                startIcon={<AddIcon />}
+                startIcon={<AddIcon/>}
                 onClick={handleCreateTeamDialogOpen}
             >
                 Create New Team
             </Button>
+            {isTeamPlayer && (
             <Dialog open={open} onClose={handleTeamInviteDialogClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Invite to Team</DialogTitle>
                 <DialogContent>
@@ -140,6 +135,7 @@ const TeamPage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            )}
             <Dialog open={createTeamOpen} onClose={handleCreateTeamDialogClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Create New Team</DialogTitle>
                 <DialogContent>
@@ -164,24 +160,26 @@ const TeamPage = () => {
                 </DialogActions>
             </Dialog>
             {isTeamPlayer && (
+
                 <div className="team-stats">
                     <p><strong>Score:</strong> {teamData.totalScore}</p>
                     <p><strong>Win/Loss Ratio:</strong> teamData.winLossRatio</p>
                     <p><strong>Total Games:</strong> teamData.winLossRatio</p>
                     <h3>Team Members:</h3>
-                    {teamMembers.map((member) => (
+              {/*      {teamMembers.map((member) => (
                         <div key={member}>
                             <span>{member}</span>
                             <button onClick={() => removeTeamMember(member)}>
                                 Remove from Team
                             </button>
                         </div>
-                    ))}
+                    ))}*/}
                 </div>
             )}
             {!isTeamPlayer && (
                 <div className="team-prompt">
-                    <p><strong> Please join a team or create one to view Team Statistics, You can only join teams Upon invitation</strong></p>
+                    <p><strong> Please join a team or create one to view Team Statistics, You can only join teams Upon
+                        invitation</strong></p>
                 </div>
             )}
 

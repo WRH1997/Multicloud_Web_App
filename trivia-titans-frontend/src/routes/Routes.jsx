@@ -12,6 +12,7 @@ import ConfigureTriviaGames from "../components/admin/ConfigureTriviaGames";
 import {UpdateTriviaGame} from "../components/admin/ConfigureTriviaGameConfigurations/UpdateTriviaGame";
 import BrowseTriviaGames from "../components/admin/BrowseTriviaGames"
 import TeamPage from "../components/team/teamStats";
+import Chat from "../components/common/ChatBox";
 
 const AppRoutes = () => {
     return (
@@ -28,6 +29,7 @@ const AppRoutes = () => {
             <Route path='ConfigureTriviaGames' element={<ConfigureTriviaGames />} />
             <Route path="/UpdateTriviaGame" element={<UpdateTriviaGame />} />
             <Route path="/BrowseTriviaGames" element={<BrowseTriviaGames />} />
+            <Route path="/Chat" element={<Chat />} />
         </Routes>
         </AuthProvider>
     );

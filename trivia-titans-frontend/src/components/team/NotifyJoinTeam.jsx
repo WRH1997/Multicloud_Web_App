@@ -1,4 +1,4 @@
-// Import the necessary AWS SDK clients and commands
+
 import {fromCognitoIdentityPool} from "@aws-sdk/credential-provider-cognito-identity";
 import {CognitoIdentityClient} from "@aws-sdk/client-cognito-identity";
 

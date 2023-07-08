@@ -6,12 +6,13 @@ import invokeLambdaFunction from "../common/InvokeLambda";
 import Logout from "./Logout";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import {useNavigate} from "react-router";
-const { from } = location.state || { from: { pathname: "/" } };
+import {useLocation, useNavigate} from "react-router-dom";
+
 
 
 const Login = () => {
-
+    const routeLocation = useLocation();
+    const { from } = routeLocation.state || { from: { pathname: "/" } };
   const [formData, setFormData] = useState({
         question1: '',
         answer1: '',
@@ -28,20 +29,32 @@ const Login = () => {
     const [answer, setAnswer] = useState('');
     const [mfaModalIsOpen, setMfaModalIsOpen] = useState(false);
     const selectedQuestion = Math.floor(Math.random() * 2)+1;
+    const navigate = useNavigate();
     const handleLogin = async (e) => {
         e.preventDefault();
         const auth = getAuth();
-        try {
-            await signInWithEmailAndPassword(auth,email,password);
-            const navigate = useNavigate();
-            console.log("user signed in successfully");
-            navigate(from);
-            // user logged in
-        } catch (error) {
-            console.error(error);
-            // handle error
-        }
-    };
+            signInWithEmailAndPassword(auth,email,password)
+        .then(async (result) => {
+                const isMFAUser = await checkMfaUser(result.user);
+                setUserEmail(result.user.email);
+                if (!isMFAUser) {
+                    openModal();
+                }
+                else
+                {
+                    await handleMfaLogin(result.user);
+                }
+            }
+        ).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // The email of the user's account used.
+                const email = error.customData.email;
+                const credential = GoogleAuthProvider.credentialFromError(error);
+
+            });
+
+    }
     const openModal = () => {
         setModalIsOpen(true);
     }
@@ -52,8 +65,6 @@ const Login = () => {
 
         signInWithPopup(auth, provider)
             .then(async (result) => {
-               // const credential = GoogleAuthProvider.credentialFromResult(result);
-                //const token = credential.accessToken;
                 const isMFAUser = await checkMfaUser(result.user);
                 setUserEmail(result.user.email);
             if (!isMFAUser) {
