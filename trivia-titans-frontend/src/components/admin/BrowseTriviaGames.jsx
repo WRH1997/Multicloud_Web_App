@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CircularProgress, Container, CssBaseline, Grid, Pagination, ThemeProvider, Typography, useMediaQuery } from '@mui/material';
+import { CircularProgress, Container, CssBaseline, Grid, Pagination, ThemeProvider, Typography } from '@mui/material';
 import { appTheme } from '../../themes/theme';
 
 import { useNavigate } from "react-router";
