@@ -76,12 +76,6 @@ export default function LandingPage() {
           >
             Team Management
           </Button>
-          <Button
-              variant="contained"
-              onClick={() => navigate("/Chat")}
-          >
-           Team Chat Test
-          </Button>
         </Grid>
       </Grid>
     </Grid>

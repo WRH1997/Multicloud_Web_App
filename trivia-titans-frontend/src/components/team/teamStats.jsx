@@ -6,6 +6,7 @@ import invokeLambdaFunction from "../common/InvokeLambda";
 import {AuthContext} from "../common/AuthContext";
 import {useNavigate} from "react-router";
 import {fetchMemberTeamData} from "../common/teamContext";
+import Chat from "../common/ChatBox";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
@@ -164,7 +165,12 @@ const TeamPage = () => {
                             </button>
                         </div>
                     ))}*/}
+                    <div>
+                        <h2>Team Chat:</h2>
+                        <Chat />
+                    </div>
                 </div>
+
             )}
             {!isTeamPlayer && (
                 <div className="team-prompt">

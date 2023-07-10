@@ -28,8 +28,7 @@ const AppRoutes = () => {
             <Route path = 'ManageTeams' element = {<TeamPage/>} />
             <Route path='ConfigureTriviaGames' element={<ConfigureTriviaGames />} />
             <Route path="/UpdateTriviaGame" element={<UpdateTriviaGame />} />
-            <Route path="/BrowseTriviaGames" element={<BrowseTriviaGames />} />
-            <Route path="/Chat" element={<Chat />} />
+            <Route path="/BrowseTriviaGames" element={<BrowseTriviaGames />} />hit
         </Routes>
         </AuthProvider>
     );
