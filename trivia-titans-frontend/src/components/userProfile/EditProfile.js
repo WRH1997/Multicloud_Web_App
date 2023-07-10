@@ -1,8 +1,6 @@
 import React from 'react';
-import {useEffect, useState, useMemo, useContext} from 'react';
 import '../../themes/EditProfile.css';
 import {AuthContext} from "../common/AuthContext";
-
 const AWS = require("aws-sdk");
 AWS.config.region = 'us-east-1';
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -51,13 +49,13 @@ class EditProfile extends React.Component{
                     "photoURL": snapshot.Item.PhotoURL
                 }
             })
-            return;
+
         }).catch(console.error);
     }
 
 
     componentDidUpdate(){
-        if(this.context.uid!=this.state.currentUser.uid){
+        if(this.context.uid!==this.state.currentUser.uid){
             console.log(this.context);
             this.FetchCurrentUserData(this.context.uid);
         }
