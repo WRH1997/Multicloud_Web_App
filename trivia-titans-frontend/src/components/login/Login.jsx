@@ -12,8 +12,9 @@ import {useLocation, useNavigate} from "react-router-dom";
 
 const Login = () => {
     const routeLocation = useLocation();
-    const { from } = routeLocation.state || { from: { pathname: "/" } };
-  const [formData, setFormData] = useState({
+    const { from } = routeLocation.pathname|| { from: { pathname: '/' } };
+
+    const [formData, setFormData] = useState({
         question1: '',
         answer1: '',
         question2: '',
@@ -28,36 +29,38 @@ const Login = () => {
     const [secretQuestion, setSecretQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [mfaModalIsOpen, setMfaModalIsOpen] = useState(false);
-    const selectedQuestion = Math.floor(Math.random() * 2)+1;
+    const selectedQuestion = Math.floor(Math.random() * 2) + 1;
     const navigate = useNavigate();
+
     const handleLogin = async (e) => {
+
         e.preventDefault();
         const auth = getAuth();
-            signInWithEmailAndPassword(auth,email,password)
-        .then(async (result) => {
-                const isMFAUser = await checkMfaUser(result.user);
-                setUserEmail(result.user.email);
-                if (!isMFAUser) {
-                    openModal();
-                }
-                else
-                {
-                    await handleMfaLogin(result.user);
-                }
-            }
-        ).catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // The email of the user's account used.
-                const email = error.customData.email;
-                const credential = GoogleAuthProvider.credentialFromError(error);
+        signInWithEmailAndPassword(auth, email, password)
+            .then(async (result) => {
+                    const isMFAUser = await checkMfaUser(result.user);
+                    setUserEmail(result.user.email);
+                    if (!isMFAUser) {
+                        openModal();
+                    } else {
+                        await handleMfaLogin(result.user);
+                    }
 
-            });
+                }
+            ).catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // The email of the user's account used.
+            const email = error.customData.email;
+            const credential = GoogleAuthProvider.credentialFromError(error);
+
+        });
 
     }
     const openModal = () => {
         setModalIsOpen(true);
     }
+
     async function
     gmailUserLogin() {
         const provider = new GoogleAuthProvider();
@@ -67,13 +70,11 @@ const Login = () => {
             .then(async (result) => {
                 const isMFAUser = await checkMfaUser(result.user);
                 setUserEmail(result.user.email);
-            if (!isMFAUser) {
+                if (!isMFAUser) {
                     openModal();
+                } else {
+                    await handleMfaLogin(result.user);
                 }
-            else
-            {
-                await handleMfaLogin(result.user);
-            }
             }).catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
@@ -83,6 +84,7 @@ const Login = () => {
 
         });
     }
+
     async function checkMfaUser(user) {
         const jsonPayload = {
             tableName: "userLoginInfo",
@@ -92,10 +94,10 @@ const Login = () => {
             }
         };
         const lambdaResponse = (await invokeLambda("lambdaDynamoDBClient", jsonPayload));
-        return !(lambdaResponse==null);
+        return !(lambdaResponse == null);
     }
-    async function handleMfaLogin(user)
-    {
+
+    async function handleMfaLogin(user) {
         const jsonPayload = {
             tableName: "userLoginInfo",
             operation: "READ",
@@ -103,9 +105,9 @@ const Login = () => {
                 userEmail: user.email,
             }
         };
-        let expectedQuestion ='';
+        let expectedQuestion = '';
         const question = await invokeLambda("lambdaDynamoDBClient", jsonPayload);
-        switch(selectedQuestion) {
+        switch (selectedQuestion) {
             case 1:
                 expectedQuestion = question.secretQuestion1;
                 break;
@@ -119,6 +121,7 @@ const Login = () => {
         setSecretQuestion(expectedQuestion);
         setMfaModalIsOpen(true);
     }
+
     const handleChange = async (e) => {
         setFormData({
             ...formData,
@@ -139,7 +142,7 @@ const Login = () => {
         };
         const userMfaData = await invokeLambda("lambdaDynamoDBClient", jsonPayload);
         let expectedAnswer = '';
-        switch(selectedQuestion) {
+        switch (selectedQuestion) {
             case 1:
                 expectedAnswer = userMfaData.secretAnswer1;
                 break;
@@ -150,14 +153,13 @@ const Login = () => {
                 expectedAnswer = userMfaData.secretAnswer3;
                 break;
         }
-        console.log(answer,expectedAnswer,selectedQuestion);
+        console.log(answer, expectedAnswer, selectedQuestion);
         console.log(await invokeLambda("lambdaDynamoDBClient", jsonPayload));
-       if(answer === expectedAnswer ) {
-            console.log ( "MFA USER LOGIN SUCCESS ");
-        }
-        else
-        {
-            console.log ( "MFA USER LOGIN FAILED!! wrong answer ");
+        if (answer === expectedAnswer) {
+            console.log("MFA USER LOGIN SUCCESS ");
+            navigate(from);
+        } else {
+            console.log("MFA USER LOGIN FAILED!! wrong answer ");
             Logout();
         }
         setMfaModalIsOpen(false);
@@ -178,7 +180,8 @@ const Login = () => {
                 type: "USER"
             }
         }
-        const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient",jsonPayload);
+
+        const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
         console.log("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
     };

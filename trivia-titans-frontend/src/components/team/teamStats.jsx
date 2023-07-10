@@ -3,17 +3,17 @@ import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } 
 import AddIcon from "@mui/icons-material/Add";
 import notifyJoinTeam from "./NotifyJoinTeam";
 import invokeLambdaFunction from "../common/InvokeLambda";
-import {getAuth} from "firebase/auth";
 import {AuthContext} from "../common/AuthContext";
 import {useNavigate} from "react-router";
+import {fetchMemberTeamData} from "../common/teamContext";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
+    const [teamName,setTeamName]=useState("");
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
-    const [isTeamPlayer, setIsTeamPlayer] = useState(false);
+    let isTeamPlayer = false;
     const [email, setEmail] = useState("");
-    const [teamName, setTeamName] = useState("");
     const [createTeamOpen, setCreateTeamOpen] = useState(false);
     let teamData = {};
     let teamMembers = null;
@@ -55,20 +55,16 @@ const TeamPage = () => {
         };
         await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
         console.log(`Joining team ${teamName} as ADMIN`);
-        const auth = getAuth();
         const jsonPayload2 = {
             tableName: "teamMembers",
             operation: "CREATE",
             item: {
-                playerEmail: auth.currentUser.email,
+                playerEmail: currentUser.email,
                 teamName: teamName,
                 teamPermission: 'ADMIN'
             }
         };
         await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
-        setTeamName("");
-        setCreateTeamOpen(false);
-        setIsTeamPlayer(true);
     }
 
     const sendEmailInvite = () => {
@@ -78,16 +74,10 @@ const TeamPage = () => {
         setEmail("");
         setOpen(false);
     };
-    const fetchCurrentMemberTeamData = async () => {
-        const teamPlayerData = fetchCurrentMemberTeamData(currentUser);
-        if(teamPlayerData) {
-            setIsTeamPlayer(true);
-            setTeamName(teamData.teamName);
-        }
-    return teamPlayerData;
+    const teamPlayerData = fetchMemberTeamData(currentUser);
+    if(teamPlayerData) {
+        isTeamPlayer = true;
     }
-    fetchCurrentMemberTeamData();
-
     function removeTeamMember(member) {
 
 

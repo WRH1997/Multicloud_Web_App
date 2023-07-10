@@ -1,9 +1,6 @@
 import invokeLambdaFunction from "./InvokeLambda";
-import {useContext} from "react";
-import {AuthContext} from "./AuthContext";
 
-export const fetchCurrentMemberTeamData = async () => {
-    const currentUser = useContext(AuthContext);
+export const fetchMemberTeamData = async (currentUser) => {
     const jsonPayload = {
         tableName: "teamMembers",
         operation: "READ",
@@ -13,8 +10,7 @@ export const fetchCurrentMemberTeamData = async () => {
     };
     return await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
 }
-export const fetchCurrentMemberPermissions = async () => {
-    const currentUser = useContext(AuthContext);
+export const fetchCurrentMemberPermissions = async (currentUser) => {
    const playerTeamInfo = fetchCurrentMemberPermissions(currentUser);
    return playerTeamInfo.teamPermission;
 }
