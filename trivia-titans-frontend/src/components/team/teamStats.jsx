@@ -1,21 +1,34 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import notifyJoinTeam from "./NotifyJoinTeam";
 import invokeLambdaFunction from "../common/InvokeLambda";
-import {getAuth} from "firebase/auth";
 import {AuthContext} from "../common/AuthContext";
+import {useNavigate} from "react-router";
+import {fetchMemberTeamData} from "../common/teamContext";
+import Chat from "../common/ChatBox";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
-    console.log(currentUser);
+    const [teamName,setTeamName]=useState("");
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
-    const [isTeamPlayer, setIsTeamPlayer] = useState(false);
+    let isTeamPlayer = false;
     const [email, setEmail] = useState("");
-    const [teamName, setTeamName] = useState("");
     const [createTeamOpen, setCreateTeamOpen] = useState(false);
     let teamData = {};
     let teamMembers = null;
+    useEffect(() => {
+        if (!currentUser) {
+            // if user not logged in, navigate to login
+            navigate("/login");
+        }
+    }, [currentUser, navigate]);
+    if (!currentUser) {
+        // render nothing if user not logged in
+        return null;
+    }
+
     const handleTeamInviteDialogOpen = () => {
         setOpen(true);
     };
@@ -29,8 +42,7 @@ const TeamPage = () => {
     const handleCreateTeamDialogClose = () => {
         setCreateTeamOpen(false);
     };
-    const createNewTeam = () =>
-    {
+    const createNewTeam = async () => {
         console.log(`creating new team with name ${teamName}`);
         const jsonPayload = {
             tableName: "teamStats",
@@ -42,45 +54,33 @@ const TeamPage = () => {
                 totalScore: 0
             }
         };
-        invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
+        await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
         console.log(`Joining team ${teamName} as ADMIN`);
-        const auth = getAuth();
         const jsonPayload2 = {
             tableName: "teamMembers",
             operation: "CREATE",
             item: {
-                playerEmail: auth.currentUser.email,
+                playerEmail: currentUser.email,
                 teamName: teamName,
-                teamPermission : 'ADMIN'
+                teamPermission: 'ADMIN'
             }
         };
-        const lambdaResponse=invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
-        setTeamName("");
-        setCreateTeamOpen(false);
+        await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
     }
 
     const sendEmailInvite = () => {
         // Add your code here to handle the invite
         console.log(`Invitation sent to: ${email}`);
-        notifyJoinTeam(email,'TestTeam');
+        notifyJoinTeam(email, 'TestTeam');
         setEmail("");
         setOpen(false);
     };
-    const fetchCurrentMemberData = () =>
-    {
-        const auth = getAuth();
-        const jsonPayload = {
-            tableName: "teamMembers",
-            operation: "READ",
-            key: {
-                playerEmail: auth.currentUser.email
-            }
-        };
-        teamData = invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
-        console.log(teamData);
+    const teamPlayerData = fetchMemberTeamData(currentUser);
+    if(teamPlayerData) {
+        isTeamPlayer = true;
     }
-
     function removeTeamMember(member) {
+
 
     }
 
@@ -89,7 +89,7 @@ const TeamPage = () => {
             <Button
                 variant="contained"
                 color="primary"
-                startIcon={<AddIcon />}
+                startIcon={<AddIcon/>}
                 onClick={handleTeamInviteDialogOpen}
             >
                 Invite Players to team
@@ -97,11 +97,12 @@ const TeamPage = () => {
             <Button
                 variant="contained"
                 color="primary"
-                startIcon={<AddIcon />}
+                startIcon={<AddIcon/>}
                 onClick={handleCreateTeamDialogOpen}
             >
                 Create New Team
             </Button>
+            {isTeamPlayer && (
             <Dialog open={open} onClose={handleTeamInviteDialogClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Invite to Team</DialogTitle>
                 <DialogContent>
@@ -125,6 +126,7 @@ const TeamPage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            )}
             <Dialog open={createTeamOpen} onClose={handleCreateTeamDialogClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Create New Team</DialogTitle>
                 <DialogContent>
@@ -149,24 +151,31 @@ const TeamPage = () => {
                 </DialogActions>
             </Dialog>
             {isTeamPlayer && (
+
                 <div className="team-stats">
                     <p><strong>Score:</strong> {teamData.totalScore}</p>
                     <p><strong>Win/Loss Ratio:</strong> teamData.winLossRatio</p>
                     <p><strong>Total Games:</strong> teamData.winLossRatio</p>
                     <h3>Team Members:</h3>
-                    {teamMembers.map((member) => (
+              {/*      {teamMembers.map((member) => (
                         <div key={member}>
                             <span>{member}</span>
                             <button onClick={() => removeTeamMember(member)}>
                                 Remove from Team
                             </button>
                         </div>
-                    ))}
+                    ))}*/}
+                    <div>
+                        <h2>Team Chat:</h2>
+                        <Chat />
+                    </div>
                 </div>
+
             )}
             {!isTeamPlayer && (
                 <div className="team-prompt">
-                    <p><strong> Please join a team or create one to view Team Statistics, You can only join teams Upon invitation</strong></p>
+                    <p><strong> Please join a team or create one to view Team Statistics, You can only join teams Upon
+                        invitation</strong></p>
                 </div>
             )}
 
