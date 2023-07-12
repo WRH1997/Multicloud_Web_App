@@ -2,11 +2,12 @@ import { Button, TextField, FormControl, FormLabel, FormGroup, Grid } from '@mui
 import { useState } from 'react';
 import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 
 
 const SubmitForm = () => {
   const difficulty_level = ['Hard', 'Medium', 'Easy'];
-  const category = ['Sports', 'Movies'];
+  const category = ['Sports', 'Movies', 'Books', 'General'];
   const question_result = ['Incorrect','Correct'];
 
   const [inputs, setInputs] = useState([]);
@@ -45,8 +46,30 @@ const SubmitForm = () => {
     setVerdict(updatedVerdict);
   }
 
+  const getTag = async (text) => {
+    try {
+      const url = 'https://us-central1-csci5410a2-391323.cloudfunctions.net/tagTriviaQuestion'; 
+  
+      const response = await axios.post(url, { question: text });
+  
+      if (response.status !== 200) {
+        throw new Error('Error calling Cloud Function');
+      }
+  
+      const result = response.data;
+      console.log('Cloud Function response:', result);
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const result = await getTag(quesText);
+    console.log(result[0]);
 
     const data = {
       tableName: "triviaquestion",
@@ -54,14 +77,22 @@ const SubmitForm = () => {
       item: {
         id: uuidv4(),
         text: quesText,
-        category: categVal,
+        category: result[0],
         difficulty_level: diffVal,
-        options: inputs.map((input, index) => ({text: input, verdict: verdict[index]}))
+        options: []
       }
     };
 
-    AWS.config.update({
+    inputs.forEach((input, index) => {
+      data.item.options.push({ text: input, verdict: verdict[index] });
     });
+
+    AWS.config.update({
+      region: "us-east-1",
+      accessKeyId: "AKIA5V5W2TFS6EEFZWMW",
+      secretAccessKey: "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"
+    });
+    
 
     const params = {
       FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:lambdaDynamoDBClient',
@@ -75,7 +106,7 @@ const SubmitForm = () => {
     } catch (error) {
       console.log('Error:', error);
     }
-    console.log(data);
+    console.log(data.item.options);
   };
 
     return (
