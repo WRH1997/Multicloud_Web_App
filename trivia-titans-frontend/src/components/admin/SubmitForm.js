@@ -106,6 +106,30 @@ const SubmitForm = () => {
     console.log(data.item.options);
   };
 
+  const handleLeaderboard = async (event) => {
+    event.preventDefault();
+
+    const data = {
+      tableName: "teamStats"
+    };
+
+    AWS.config.update({
+    });
+
+    const params = {
+      FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:teamLeaderboard',
+      Payload: JSON.stringify(data)
+    };
+    const lambda = new AWS.Lambda();
+
+    try {
+      const response = await lambda.invoke(params).promise();
+      const data = JSON.parse(response.Payload);
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  };
+
     return (
         <FormControl component="form" onSubmit={handleSubmit} style={{ backgroundColor: 'white', padding: '20px' }}>
       <Grid container spacing={2}>
