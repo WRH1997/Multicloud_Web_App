@@ -32,9 +32,7 @@ const Chat = () => {
 
     useEffect(() => {
         if(isTeamPlayer && teamName) {
-
-            const q = query(collection(db, teamName), orderBy('timestamp', 'desc'));
-            console.log(q);
+            const q = query(collection(db, teamName), orderBy('timestamp', 'asc'));
             const unsubscribe = onSnapshot(q, (snapshot) => {
                 setChat(snapshot.docs.map(doc => doc.data()));
             });
@@ -55,9 +53,12 @@ const Chat = () => {
     }
 
     const renderChat = () => {
-        return chat.map(({name, message}, idx) => (
+        return chat.map(({name, message,timestamp}, idx) => (
             <ListItem key={idx}>
-                <ListItemText primary={name} secondary={message} />
+                <ListItemText primary={name} secondary={message}/>
+                 <ListItemText >
+                     <span style={{ fontSize: "0.60rem" }}>{timestamp ? timestamp.toDate().toString():'...'}</span>
+                 </ListItemText>
             </ListItem>
         ));
     }

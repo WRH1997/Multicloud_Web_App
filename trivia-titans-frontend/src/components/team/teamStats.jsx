@@ -5,25 +5,41 @@ import notifyJoinTeam from "./NotifyJoinTeam";
 import invokeLambdaFunction from "../common/InvokeLambda";
 import {AuthContext} from "../common/AuthContext";
 import {useNavigate} from "react-router";
-import {fetchMemberTeamData} from "../common/teamContext";
+import {fetchAllTeamMembersData, fetchMemberTeamData} from "../common/teamContext";
 import Chat from "../common/ChatBox";
+import {set} from "react-hook-form";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
-    const [teamName,setTeamName]=useState("");
+    const [teamName,setTeamName]=useState(null);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     let isTeamPlayer = false;
     const [email, setEmail] = useState("");
     const [createTeamOpen, setCreateTeamOpen] = useState(false);
+    const [teamMembers,setTeamMembers] = useState(null);
     let teamData = {};
-    let teamMembers = null;
+   // const [teamMembers,setTeamMembers] = useState(null);
+
+
     useEffect(() => {
         if (!currentUser) {
             // if user not logged in, navigate to login
             navigate("/login");
         }
     }, [currentUser, navigate]);
+    useEffect(() => {
+        const getTeamMemberList = async () => {
+            if (isTeamPlayer) {
+                console.log(teamName);
+                //setTeamMembers( );
+                setTeamMembers(await fetchAllTeamMembersData(teamName));
+            }
+        }
+        getTeamMemberList();
+    }, [teamName,currentUser]);
+
+
     if (!currentUser) {
         // render nothing if user not logged in
         return null;
@@ -76,14 +92,15 @@ const TeamPage = () => {
         setOpen(false);
     };
     const teamPlayerData = fetchMemberTeamData(currentUser);
+
     if(teamPlayerData) {
         isTeamPlayer = true;
+
     }
+
     function removeTeamMember(member) {
 
-
     }
-
     return (
         <div>
             <Button
@@ -154,10 +171,10 @@ const TeamPage = () => {
 
                 <div className="team-stats">
                     <p><strong>Score:</strong> {teamData.totalScore}</p>
-                    <p><strong>Win/Loss Ratio:</strong> teamData.winLossRatio</p>
-                    <p><strong>Total Games:</strong> teamData.winLossRatio</p>
+                    <p><strong>Win/Loss Ratio:</strong> {teamData.winLossRatio}</p>
+                    <p><strong>Total Games:</strong> {teamData.totalGames}</p>
                     <h3>Team Members:</h3>
-              {/*      {teamMembers.map((member) => (
+                    {/*{teamMembers.map((member) => (
                         <div key={member}>
                             <span>{member}</span>
                             <button onClick={() => removeTeamMember(member)}>
