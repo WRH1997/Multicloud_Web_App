@@ -11,10 +11,10 @@ import {set} from "react-hook-form";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
-    const [teamName,setTeamName]=useState(null);
+    const [teamName,setTeamName] = useState(null);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
-    let isTeamPlayer = false;
+    const [isTeamPlayer,setIsTeamPlayer] = useState(false);
     const [email, setEmail] = useState("");
     const [createTeamOpen, setCreateTeamOpen] = useState(false);
     const [teamMembers,setTeamMembers] = useState(null);
@@ -29,11 +29,23 @@ const TeamPage = () => {
         }
     }, [currentUser, navigate]);
     useEffect(() => {
+        const getTeamPlayerData = async () => {
+            if (currentUser) {
+                const teamPlayerData = await fetchMemberTeamData(currentUser);
+                if (teamPlayerData) {
+                    setTeamName(teamPlayerData.teamName);
+                    setIsTeamPlayer(true);
+                }
+            }
+        }
+        getTeamPlayerData();
+    }, [currentUser]);
+    useEffect(() => {
         const getTeamMemberList = async () => {
             if (isTeamPlayer) {
                 console.log(teamName);
-                //setTeamMembers( );
-                setTeamMembers(await fetchAllTeamMembersData(teamName));
+                const teamMemberData = await fetchAllTeamMembersData(teamName);
+                console.log(teamMemberData);
             }
         }
         getTeamMemberList();
@@ -91,13 +103,6 @@ const TeamPage = () => {
         setEmail("");
         setOpen(false);
     };
-    const teamPlayerData = fetchMemberTeamData(currentUser);
-
-    if(teamPlayerData) {
-        isTeamPlayer = true;
-
-    }
-
     function removeTeamMember(member) {
 
     }
