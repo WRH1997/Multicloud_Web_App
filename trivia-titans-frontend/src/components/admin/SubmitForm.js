@@ -110,7 +110,13 @@ const SubmitForm = () => {
     event.preventDefault();
 
     const data = {
-      tableName: "TriviaLeaderboard"
+      TableName: 'TriviaLeaderboard',
+      SortAttribute:'Score',
+      SortOrder: 'DESCENDING',
+      Filters: [
+        { attribute: 'GameId', operator: '>', value: '1', type: 'S'},
+        { attribute: 'Score', operator: '>', value: '40', type: 'N'}
+      ]
     };
 
     AWS.config.update({
@@ -133,7 +139,7 @@ const SubmitForm = () => {
   };
 
     return (
-        <FormControl component="form" onSubmit={handleLeaderboard} style={{ backgroundColor: 'white', padding: '20px' }}>
+        <FormControl component="form" onSubmit={handleSubmit} style={{ backgroundColor: 'white', padding: '20px' }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <FormLabel component="legend">Create Question</FormLabel>
