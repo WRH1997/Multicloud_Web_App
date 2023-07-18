@@ -110,7 +110,7 @@ const SubmitForm = () => {
     event.preventDefault();
 
     const data = {
-      tableName: "teamStats"
+      tableName: "TriviaLeaderboard"
     };
 
     AWS.config.update({
@@ -124,14 +124,16 @@ const SubmitForm = () => {
 
     try {
       const response = await lambda.invoke(params).promise();
+      console.log(response);
       const data = JSON.parse(response.Payload);
+      console.log(data);
     } catch (error) {
       console.log('Error:', error);
     }
   };
 
     return (
-        <FormControl component="form" onSubmit={handleSubmit} style={{ backgroundColor: 'white', padding: '20px' }}>
+        <FormControl component="form" onSubmit={handleLeaderboard} style={{ backgroundColor: 'white', padding: '20px' }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <FormLabel component="legend">Create Question</FormLabel>
