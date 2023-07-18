@@ -5,25 +5,49 @@ import notifyJoinTeam from "./NotifyJoinTeam";
 import invokeLambdaFunction from "../common/InvokeLambda";
 import {AuthContext} from "../common/AuthContext";
 import {useNavigate} from "react-router";
-import {fetchMemberTeamData} from "../common/teamContext";
+import {fetchAllTeamMembersData, fetchMemberTeamData} from "../common/teamContext";
 import Chat from "../common/ChatBox";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
-    const [teamName,setTeamName]=useState("");
+    const [teamName,setTeamName] = useState(null);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
-    let isTeamPlayer = false;
+    const [isTeamPlayer,setIsTeamPlayer] = useState(false);
     const [email, setEmail] = useState("");
     const [createTeamOpen, setCreateTeamOpen] = useState(false);
+    const [teamMembers,setTeamMembers] = useState(null);
     let teamData = {};
-    let teamMembers = null;
     useEffect(() => {
         if (!currentUser) {
             // if user not logged in, navigate to login
             navigate("/login");
         }
     }, [currentUser, navigate]);
+    useEffect(() => {
+        const getTeamPlayerData = async () => {
+            if (currentUser) {
+                const teamPlayerData = await fetchMemberTeamData(currentUser);
+                if (teamPlayerData) {
+                    setTeamName(teamPlayerData.teamName);
+                    setIsTeamPlayer(true);
+                }
+            }
+        }
+        getTeamPlayerData();
+    }, [currentUser]);
+    useEffect(() => {
+        const getTeamMemberList = async () => {
+            if (isTeamPlayer) {
+                const teamMemberData = await fetchAllTeamMembersData(teamName);
+                setTeamMembers(teamMemberData);
+                console.log(teamMemberData);
+            }
+        }
+        getTeamMemberList();
+    }, [teamName,currentUser]);
+
+
     if (!currentUser) {
         // render nothing if user not logged in
         return null;
@@ -75,15 +99,9 @@ const TeamPage = () => {
         setEmail("");
         setOpen(false);
     };
-    const teamPlayerData = fetchMemberTeamData(currentUser);
-    if(teamPlayerData) {
-        isTeamPlayer = true;
-    }
     function removeTeamMember(member) {
 
-
     }
-
     return (
         <div>
             <Button
@@ -150,21 +168,18 @@ const TeamPage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {isTeamPlayer && (
+            {isTeamPlayer && teamMembers && (
 
                 <div className="team-stats">
                     <p><strong>Score:</strong> {teamData.totalScore}</p>
-                    <p><strong>Win/Loss Ratio:</strong> teamData.winLossRatio</p>
-                    <p><strong>Total Games:</strong> teamData.winLossRatio</p>
-                    <h3>Team Members:</h3>
-              {/*      {teamMembers.map((member) => (
-                        <div key={member}>
-                            <span>{member}</span>
-                            <button onClick={() => removeTeamMember(member)}>
-                                Remove from Team
-                            </button>
+                    <p><strong>Win/Loss Ratio:</strong> {teamData.winLossRatio}</p>
+                    <p><strong>Total Games:</strong> {teamData.totalGames}</p>
+                    <h3>Team Members are displayed below:</h3>
+                    {teamMembers.map((team, index) => (
+                        <div key={index}>
+                            <p>Player Email: {team.playerEmail.S}</p>
                         </div>
-                    ))}*/}
+                    ))}
                     <div>
                         <h2>Team Chat:</h2>
                         <Chat />
