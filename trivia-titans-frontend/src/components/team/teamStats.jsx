@@ -7,7 +7,6 @@ import {AuthContext} from "../common/AuthContext";
 import {useNavigate} from "react-router";
 import {fetchAllTeamMembersData, fetchMemberTeamData} from "../common/teamContext";
 import Chat from "../common/ChatBox";
-import {set} from "react-hook-form";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
@@ -19,9 +18,6 @@ const TeamPage = () => {
     const [createTeamOpen, setCreateTeamOpen] = useState(false);
     const [teamMembers,setTeamMembers] = useState(null);
     let teamData = {};
-   // const [teamMembers,setTeamMembers] = useState(null);
-
-
     useEffect(() => {
         if (!currentUser) {
             // if user not logged in, navigate to login
@@ -43,8 +39,8 @@ const TeamPage = () => {
     useEffect(() => {
         const getTeamMemberList = async () => {
             if (isTeamPlayer) {
-                console.log(teamName);
                 const teamMemberData = await fetchAllTeamMembersData(teamName);
+                setTeamMembers(teamMemberData);
                 console.log(teamMemberData);
             }
         }
@@ -172,21 +168,18 @@ const TeamPage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {isTeamPlayer && (
+            {isTeamPlayer && teamMembers && (
 
                 <div className="team-stats">
                     <p><strong>Score:</strong> {teamData.totalScore}</p>
                     <p><strong>Win/Loss Ratio:</strong> {teamData.winLossRatio}</p>
                     <p><strong>Total Games:</strong> {teamData.totalGames}</p>
-                    <h3>Team Members:</h3>
-                    {/*{teamMembers.map((member) => (
-                        <div key={member}>
-                            <span>{member}</span>
-                            <button onClick={() => removeTeamMember(member)}>
-                                Remove from Team
-                            </button>
+                    <h3>Team Members are displayed below:</h3>
+                    {teamMembers.map((team, index) => (
+                        <div key={index}>
+                            <p>Player Email: {team.playerEmail.S}</p>
                         </div>
-                    ))}*/}
+                    ))}
                     <div>
                         <h2>Team Chat:</h2>
                         <Chat />
