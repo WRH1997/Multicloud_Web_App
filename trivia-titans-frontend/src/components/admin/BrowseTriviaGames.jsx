@@ -30,7 +30,7 @@ export default function BrowseTriviaGames() {
                 tableName: "TriviaGames",
                 operation: "SIMPLE_SCAN",
             };
-            const data = await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload)
+            const data = await invokeLambdaFunction("SimpleScan_DynamoDBClient", jsonPayload)
             setTriviaGames(data);
             setLoading(false);
         } catch (error) {

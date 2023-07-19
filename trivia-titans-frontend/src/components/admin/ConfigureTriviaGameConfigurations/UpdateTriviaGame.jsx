@@ -45,7 +45,7 @@ const UpdateTriviaGame = () => {
                 tableName: "TriviaGames",
                 operation: "SIMPLE_SCAN",
             };
-            const data = await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload)
+            const data = await invokeLambdaFunction("SimpleScan_DynamoDBClient", jsonPayload)
             setTriviaGames(data);
         } catch (error) {
             setSnackbarSeverity('error');
@@ -214,7 +214,7 @@ const EditTriviaGameForm = ({open, onClose, formData, setFormData, setSnackbarOp
                     }
                 }
 
-            const data = await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload)
+            const data = await invokeLambdaFunction("Update_DynamoDBClient", jsonPayload)
             console.log(data)
 
             setSnackbarSeverity('success');

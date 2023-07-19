@@ -97,7 +97,7 @@ const CreateTriviaGame = () => {
                 tableName: "triviaquestion",
                 operation: "SIMPLE_SCAN",
             };
-            const data = await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload)
+            const data = await invokeLambdaFunction("SimpleScan_DynamoDBClient", jsonPayload)
             setTriviaQuestions(data);
         } catch (error) {
             setSnackbarSeverity('error');
