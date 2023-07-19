@@ -59,6 +59,12 @@ export default function LandingPage() {
             Manage Trivia Games
           </Button>
           <Button
+            variant="contained"
+            onClick={() => navigate("/TriviaGameLobby")}
+          >
+            Trivia Game Lobby
+          </Button>
+          <Button
               variant="contained"
               onClick={() => navigate("/Signup")}
           >
