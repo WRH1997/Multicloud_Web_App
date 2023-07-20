@@ -17,9 +17,10 @@ const CreateTriviaGame = () => {
 
     const [formData, setFormData] = useState({
         GameName: '',
+        Description: '',
         GameCategory: '',
         GameDifficulty: '',
-        PerQuestionTime: '',
+        QuizTime: '',
         StartDate: '',
         EndDate: '',
         Questions: []
@@ -31,26 +32,26 @@ const CreateTriviaGame = () => {
 
     const handleQuestionToggle = (questionId) => {
         if (selectedQuestions.includes(questionId)) {
-          setSelectedQuestions((prevSelectedQuestions) =>
-            prevSelectedQuestions.filter((id) => id !== questionId)
-          );
+            setSelectedQuestions((prevSelectedQuestions) =>
+                prevSelectedQuestions.filter((id) => id !== questionId)
+            );
         } else {
-          setSelectedQuestions((prevSelectedQuestions) => [...prevSelectedQuestions, questionId]);
+            setSelectedQuestions((prevSelectedQuestions) => [...prevSelectedQuestions, questionId]);
         }
     };
 
-    
+
     const handleChange = async (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
     };
-    
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if(selectedQuestions.length === 0){
+        if (selectedQuestions.length === 0) {
             setSnackbarMessage("Please select at least one question for the Trivia Game")
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
@@ -60,22 +61,23 @@ const CreateTriviaGame = () => {
         const jsonPayload = {
             GameId: uuidv4(),
             GameName: formData.GameName,
+            Description: formData.Description,
             GameCategory: formData.GameCategory,
             GameDifficulty: formData.GameDifficulty,
-            PerQuestionTime: formData.PerQuestionTime,
+            QuizTime: formData.QuizTime,
             StartDate: formData.StartDate,
             EndDate: formData.EndDate,
             Questions: selectedQuestions
         };
-        
+
         try {
             const lambdaResponse = await invokeLambdaFunction("CreateTriviaGame", jsonPayload);
 
             if (lambdaResponse && lambdaResponse.statusCode === 200) {
                 setSnackbarMessage(lambdaResponse.message);
-                setSnackbarSeverity('success');                
+                setSnackbarSeverity('success');
                 window.location.reload();
-                
+
             } else {
                 setSnackbarMessage(lambdaResponse.message + ": " + lambdaResponse.error);
                 setSnackbarSeverity('error');
@@ -97,7 +99,7 @@ const CreateTriviaGame = () => {
                 tableName: "triviaquestion",
                 operation: "SIMPLE_SCAN",
             };
-            const data = await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload)
+            const data = await invokeLambdaFunction("SimpleScan_DynamoDBClient", jsonPayload)
             setTriviaQuestions(data);
         } catch (error) {
             setSnackbarSeverity('error');
@@ -116,7 +118,7 @@ const CreateTriviaGame = () => {
 
     return (
         <ThemeProvider theme={appTheme}>
-        <CssBaseline />
+            <CssBaseline />
             <Grid container sx={{ margin: 5 }}>
                 <Grid item xs={1} md={4}></Grid>
                 <Grid item xs={10} md={4}>
@@ -143,7 +145,19 @@ const CreateTriviaGame = () => {
 
                                 <Grid item xs={12} sx={{ margin: 2 }}>
                                     <TextField
-                                        
+                                        required
+                                        fullWidth
+                                        minRows={4}
+                                        label="Game Description"
+                                        name="Description"
+                                        value={formData.Description}
+                                        onChange={handleChange}
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12} sx={{ margin: 2 }}>
+                                    <TextField
+                                        required
                                         fullWidth
                                         label="Game Availability Start Date"
                                         name="StartDate"
@@ -157,7 +171,7 @@ const CreateTriviaGame = () => {
                                 </Grid>
                                 <Grid item xs={12} sx={{ margin: 2 }}>
                                     <TextField
-                                        
+                                        required
                                         fullWidth
                                         label="Game Availability End Date"
                                         name="EndDate"
@@ -169,6 +183,22 @@ const CreateTriviaGame = () => {
                                         onChange={handleChange}
                                     />
                                 </Grid>
+
+                                <Grid item xs={12} sx={{ margin: 2 }}>
+                                    <TextField
+                                        required
+                                        fullWidth
+                                        type="number"
+                                        label="Quiz Time Limit (in minutes)"
+                                        name="QuizTime"
+                                        value={formData.QuizTime}
+                                        onChange={handleChange}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                    />
+                                </Grid>
+
 
                                 <Grid item xs={12} sx={{ margin: 2 }}>
                                     <FormControl component="fieldset">
@@ -192,17 +222,7 @@ const CreateTriviaGame = () => {
                                         </RadioGroup>
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={12} sx={{ margin: 2 }}>
-                                    <FormControl component="fieldset">
-                                        <FormLabel component="legend">Time Limit Per Question</FormLabel>
-                                        <RadioGroup row name="PerQuestionTime" value={formData.PerQuestionTime} onChange={handleChange}>
-                                            <FormControlLabel value="10" control={<Radio />} label="10 Seconds" />
-                                            <FormControlLabel value="30" control={<Radio />} label="30 Seconds" />
-                                            <FormControlLabel value="60" control={<Radio />} label="60 Seconds" />
-                                        </RadioGroup>
-                                    </FormControl>
-                                </Grid>
-                                
+
                                 <hr></hr>
                                 {selectedQuestions && (
                                     <><Grid item xs={12} sx={{ margin: 2 }}>
@@ -210,21 +230,21 @@ const CreateTriviaGame = () => {
                                             Questions Selected: {selectedQuestions.length}
                                         </Typography>
                                     </Grid></>
-                                )}    
+                                )}
                                 <hr></hr>
-                                
+
                                 <Grid item xs={12} sx={{ margin: 2 }}>
-                                        <TextField
-                                            fullWidth
-                                            label="Search Questions"
-                                            value={searchTerm}
-                                            onChange={handleSearchChange}
-                                            variant="standard" />
-                                    </Grid>
-                            
-                                
+                                    <TextField
+                                        fullWidth
+                                        label="Search Questions"
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
+                                        variant="standard" />
+                                </Grid>
+
+
                                 <Grid item xs={12} sx={{ margin: 2 }}>
-                                    <ListOfFilteredQuestions triviaQuestions={triviaQuestions} searchTerm={searchTerm} handleQuestionToggle={handleQuestionToggle} selectedQuestions={selectedQuestions}/>
+                                    <ListOfFilteredQuestions triviaQuestions={triviaQuestions} searchTerm={searchTerm} handleQuestionToggle={handleQuestionToggle} selectedQuestions={selectedQuestions} />
                                 </Grid>
 
                                 <Grid item xs={12} sx={{ margin: 2 }}>
@@ -238,7 +258,7 @@ const CreateTriviaGame = () => {
                 </Grid>
                 <Snackbar open={snackbarOpen} autoHideDuration={10000} onClose={handleSnackbarClose}>
                     <MuiAlert elevation={6} variant="filled" // @ts-ignore 
-                    severity={snackbarSeverity} onClose={handleSnackbarClose}>
+                        severity={snackbarSeverity} onClose={handleSnackbarClose}>
                         {snackbarMessage}
                     </MuiAlert>
                 </Snackbar>
@@ -250,36 +270,36 @@ const CreateTriviaGame = () => {
 const ListOfFilteredQuestions = ({ triviaQuestions, searchTerm, handleQuestionToggle, selectedQuestions }) => {
     let filteredTriviaQuestions = [];
     if (triviaQuestions && triviaQuestions.length > 0) {
-      filteredTriviaQuestions = triviaQuestions.filter((triviaQuestion) =>
-        triviaQuestion.text.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        triviaQuestion.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        triviaQuestion.difficulty_level.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+        filteredTriviaQuestions = triviaQuestions.filter((triviaQuestion) =>
+            triviaQuestion.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            triviaQuestion.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            triviaQuestion.difficulty_level.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     }
     return (
-      <List sx={{ padding: 0 }}>
-        {filteredTriviaQuestions.map((triviaQuestion) => {
-          const isSelected = selectedQuestions.includes(triviaQuestion.id);
-          return (
-            <ListItem key={triviaQuestion.id} sx={{ paddingLeft: 0 }}>
-              <ListItemText
-                primary={<Typography>{triviaQuestion.text}</Typography>}
-                secondary={triviaQuestion.category + " | " + triviaQuestion.difficulty_level}
-              />
-  
-              <ListItemSecondaryAction sx={{ marginLeft: 2 }}>
-                <Button
-                  variant={isSelected ? "outlined" : "contained"}
-                  size="small"
-                  onClick={() => handleQuestionToggle(triviaQuestion.id)}
-                >
-                  {isSelected ? "REMOVE" : "ADD"}
-                </Button>
-              </ListItemSecondaryAction>
-            </ListItem>
-          );
-        })}
-      </List>
+        <List sx={{ padding: 0 }}>
+            {filteredTriviaQuestions.map((triviaQuestion) => {
+                const isSelected = selectedQuestions.includes(triviaQuestion.id);
+                return (
+                    <ListItem key={triviaQuestion.id} sx={{ paddingLeft: 0 }}>
+                        <ListItemText
+                            primary={<Typography>{triviaQuestion.text}</Typography>}
+                            secondary={triviaQuestion.category + " | " + triviaQuestion.difficulty_level}
+                        />
+
+                        <ListItemSecondaryAction sx={{ marginLeft: 2 }}>
+                            <Button
+                                variant={isSelected ? "outlined" : "contained"}
+                                size="small"
+                                onClick={() => handleQuestionToggle(triviaQuestion.id)}
+                            >
+                                {isSelected ? "REMOVE" : "ADD"}
+                            </Button>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                );
+            })}
+        </List>
     );
 };
 

@@ -2,6 +2,7 @@ import {getAuth} from "firebase/auth";
 import {useState} from "react";
 import {createUserWithEmailAndPassword} from "firebase/auth";
 import invokeLambdaFunction from "../common/InvokeLambda";
+import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
 
 const
     HandleSignUp = () => {
@@ -51,6 +52,7 @@ const
                     console.log("Sign-up successful!", user);
 
                     // You can redirect the user to a new page or perform other actions here
+                    subscribeToGameUpdates(user.email);
                 })
                 .catch((error) => {
                     // Sign-up error
