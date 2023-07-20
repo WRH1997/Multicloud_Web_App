@@ -7,7 +7,7 @@ import Logout from "./Logout";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {useLocation, useNavigate} from "react-router-dom";
-
+import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
 
 
 const Login = () => {
@@ -184,6 +184,8 @@ const Login = () => {
         const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
         console.log("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
+        //After Completing Registration, perform whatever actions you want here
+        subscribeToGameUpdates(userEmail);
     };
     return (
         <Container component="main" maxWidth="xs">
