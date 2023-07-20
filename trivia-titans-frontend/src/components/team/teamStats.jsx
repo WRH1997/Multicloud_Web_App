@@ -27,7 +27,7 @@ const TeamPage = () => {
     useEffect(() => {
         const getTeamPlayerData = async () => {
             if (currentUser) {
-                const teamPlayerData = await fetchMemberTeamData(currentUser);
+                const teamPlayerData = await fetchMemberTeamData(currentUser.userEmail);
                 if (teamPlayerData) {
                     setTeamName(teamPlayerData.teamName);
                     setIsTeamPlayer(true);
@@ -100,19 +100,36 @@ const TeamPage = () => {
         setOpen(false);
     };
     const removeTeamMember = async function (playerEmail) {
-        //  e.preventDefault();
-        const jsonPayload2 = {
-            tableName: "teamMembers",
-            operation: "DELETE",
-            key: {
-                playerEmail: playerEmail
-            }
-        };
-        await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
-        setTeamMembers(teamMembers.filter((team) => team.playerEmail !== playerEmail));
-        const teamPlayerData = await fetchMemberTeamData(currentUser);
-        if(!teamPlayerData)
+        const teamPlayerData = await fetchMemberTeamData(playerEmail);
+        if (!teamPlayerData)
             setIsTeamPlayer(false);
+        else {
+            // if admin removes themselves from the team, the whole team is disbanded.
+            if (teamPlayerData.teamPermission.S === 'ADMIN') {
+                for (let item of teamMembers.Items) {
+                    const deleteUser = {
+                        tableName: "teamMembers",
+                        operation: "DELETE",
+                        key: {
+                            playerEmail: item.playerEmail.S
+                        }
+                    };
+                    await invokeLambdaFunction('Delete_DynamoDBClient', deleteUser);
+                    console.log("deleted player "+ item.playerEmail.S +" from team" +item.teamName.S);
+                    setTeamMembers(teamMembers.filter((team) => team.playerEmail !== item.playerEmail.S));
+                }
+            } else if (teamPlayerData.teamPermission.S === 'MEMBER') {
+                const jsonPayload2 = {
+                    tableName: "teamMembers",
+                    operation: "DELETE",
+                    key: {
+                        playerEmail: playerEmail
+                    }
+                };
+                await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
+                setTeamMembers(teamMembers.filter((team) => team.playerEmail !== playerEmail));
+            }
+        }
     }
     return (
         <div>

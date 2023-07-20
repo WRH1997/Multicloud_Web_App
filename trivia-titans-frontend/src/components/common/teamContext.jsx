@@ -1,11 +1,11 @@
 import invokeLambdaFunction from "./InvokeLambda";
 
-export const fetchMemberTeamData = async (currentUser) => {
+export const fetchMemberTeamData = async (currentUserEmail) => {
     const jsonPayload = {
         tableName: "teamMembers",
         operation: "READ",
         key: {
-            playerEmail: currentUser.email
+            playerEmail: currentUserEmail
         }
     };
     return await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
