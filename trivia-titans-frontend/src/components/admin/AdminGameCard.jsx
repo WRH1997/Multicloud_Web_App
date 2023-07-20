@@ -1,8 +1,11 @@
 import React from 'react';
 import { Button, Card, CardActions, CardContent, CssBaseline, Grid, ThemeProvider, Typography } from '@mui/material';
 import { appTheme } from '../../themes/theme';
+import { useNavigate } from 'react-router';
 
-const GameCard = ({ triviaGame, onGameClick }) => {
+const AdminGameCard = ({ triviaGame, onGameClick }) => {
+
+    const navigate = useNavigate()
 
     return (
         <ThemeProvider theme={appTheme}>
@@ -17,32 +20,35 @@ const GameCard = ({ triviaGame, onGameClick }) => {
                         </Typography>
 
                         <Typography variant="subtitle1" component="h2">
-                            Category: {triviaGame.GameCategory}
+                            <b>Description:</b> {triviaGame.Description}
                         </Typography>
 
                         <Typography variant="subtitle1" component="h2">
-                            Difficulty: {triviaGame.GameDifficulty}
+                            <b>Category:</b> {triviaGame.GameCategory}
                         </Typography>
 
                         <Typography variant="subtitle1" component="h2">
-                            StartDate: {triviaGame.StartDate}
+                            <b>Difficulty:</b> {triviaGame.GameDifficulty}
                         </Typography>
 
                         <Typography variant="subtitle1" component="h2">
-                            EndDate: {triviaGame.EndDate}
+                            <b>Quiz Time:</b> {triviaGame.QuizTime} minutes
+                        </Typography>
+
+                        <Typography variant="subtitle1" component="h2">
+                            <b>StartDate:</b> {triviaGame.StartDate}
+                        </Typography>
+
+                        <Typography variant="subtitle1" component="h2">
+                            <b>EndDate:</b> {triviaGame.EndDate}
                         </Typography>
 
                     </CardContent>
-
-                    <CardActions sx={{ justifyContent: 'right' }}>
-                        <Button color="secondary" variant="outlined" size="small">PLAY</Button>
-                        <Button  variant="contained" size="small">VIEW DETAILS</Button>
-                    </CardActions>
-
+                    
                 </Card>
             </Grid>
         </ThemeProvider >
     );
 };
 
-export default GameCard;
+export default AdminGameCard;

@@ -32,7 +32,7 @@ export default function TriviaGameLobby() {
                 filterExpression: "StartDate <= :currentDate AND EndDate >= :currentDate",
                 expressionAttributeValues: {
                     ":currentDate": {
-                        "S": new Date()
+                        "S": new Date().toLocaleDateString('en-CA')
                     }
                 }
             };
@@ -43,12 +43,6 @@ export default function TriviaGameLobby() {
             console.log(error);
             setLoading(false);
         }
-    };
-
-
-    const handleGameClick = (id) => {
-        navigate("/GameDetail", { state: { id } });
-        console.log(id);
     };
 
     return (
@@ -77,7 +71,7 @@ export default function TriviaGameLobby() {
                         <Grid container spacing={4}>
                             {triviaGames.slice(startIndex, endIndex).map((triviaGame) => (
                                 <Grid item key={triviaGame} md={4} >
-                                    <GameCard triviaGame={triviaGame} onGameClick={handleGameClick} />
+                                    <GameCard triviaGame={triviaGame} />
                                 </Grid>
                             ))}
                         </Grid>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField, Button, Grid, Card, Typography, List, ListItem, IconButton, ListItemText, ListItemSecondaryAction, Dialog, DialogTitle, DialogContent, Snackbar, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, ThemeProvider, CssBaseline } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -28,9 +28,10 @@ const UpdateTriviaGame = () => {
         GameId: '',
         Timestamp: '',
         GameName: '',
+        Description: '',
         GameCategory: '',
         GameDifficulty: '',
-        PerQuestionTime: '',
+        QuizTime: '',
         StartDate: '',
         EndDate: '',
     });
@@ -65,9 +66,10 @@ const UpdateTriviaGame = () => {
             GameId: selectedTriviaGame.GameId,
             Timestamp: selectedTriviaGame.Timestamp,
             GameName: selectedTriviaGame.GameName,
+            Description: selectedTriviaGame.Description,
             GameCategory: selectedTriviaGame.GameCategory,
             GameDifficulty: selectedTriviaGame.GameDifficulty,
-            PerQuestionTime: selectedTriviaGame.PerQuestionTime,
+            QuizTime: selectedTriviaGame.QuizTime,
             StartDate: selectedTriviaGame.StartDate,
             EndDate: selectedTriviaGame.EndDate,
         };
@@ -97,9 +99,10 @@ const UpdateTriviaGame = () => {
             GameId: '',
             Timestamp: '',
             GameName: '',
+            Description: '',
             GameCategory: '',
             GameDifficulty: '',
-            PerQuestionTime: '',
+            QuizTime: '',
             StartDate: '',
             EndDate: '',
         });
@@ -107,11 +110,11 @@ const UpdateTriviaGame = () => {
 
     return (
         <ThemeProvider theme={appTheme}>
-        <CssBaseline />
-            <Grid container sx={{margin: 5}}>
+            <CssBaseline />
+            <Grid container sx={{ margin: 5 }}>
                 <Grid item xs={1} md={4}></Grid>
                 <Grid item xs={10} md={4}>
-                    <Card sx={{padding: 2}}>
+                    <Card sx={{ padding: 2 }}>
                         <Grid container direction="column" spacing={2}>
 
                             <Grid item>
@@ -130,19 +133,19 @@ const UpdateTriviaGame = () => {
                             </Grid>
 
                             <Grid item>
-                                <ConfigurableListOfGames triviaGames={triviaGames} searchTerm={searchTerm} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick}/>
+                                <ConfigurableListOfGames triviaGames={triviaGames} searchTerm={searchTerm} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
                             </Grid>
                         </Grid>
                     </Card>
                 </Grid>
                 {openDeleteModal && (
-                    <DeleteTriviaGame triviaGameID={deletingTriviaGameId} triviaGameTimestamp ={deletingTriviaTimestamp} open={openDeleteModal} onClose={handleDeleteModalClose} setSnackbarOpen={setSnackbarOpen} setSnackbarMessage={setSnackbarMessage} setSnackbarSeverity={setSnackbarSeverity}/>
+                    <DeleteTriviaGame triviaGameID={deletingTriviaGameId} triviaGameTimestamp={deletingTriviaTimestamp} open={openDeleteModal} onClose={handleDeleteModalClose} setSnackbarOpen={setSnackbarOpen} setSnackbarMessage={setSnackbarMessage} setSnackbarSeverity={setSnackbarSeverity} />
                 )}
                 <EditTriviaGameForm open={openEditForm} onClose={handleFormClose} formData={formData} setFormData={setFormData} setSnackbarOpen={setSnackbarOpen} setSnackbarMessage={setSnackbarMessage} setSnackbarSeverity={setSnackbarSeverity} />
 
                 <Snackbar open={snackbarOpen} autoHideDuration={10000} onClose={handleSnackbarClose}>
                     <MuiAlert elevation={6} variant="filled" // @ts-ignore
-                            severity={snackbarSeverity} onClose={handleSnackbarClose}>
+                        severity={snackbarSeverity} onClose={handleSnackbarClose}>
                         {snackbarMessage}
                     </MuiAlert>
                 </Snackbar>
@@ -153,23 +156,28 @@ const UpdateTriviaGame = () => {
 };
 
 
-const ConfigurableListOfGames = ({triviaGames, searchTerm, onEditClick, onDeleteClick}) => {
+const ConfigurableListOfGames = ({ triviaGames, searchTerm, onEditClick, onDeleteClick }) => {
     let filteredTriviaGames = []
     if (triviaGames && triviaGames.length > 0) {
-        filteredTriviaGames = triviaGames.filter((triviaGames) => triviaGames.GameName.toLowerCase().includes(searchTerm.toLowerCase()));
+        filteredTriviaGames = triviaGames.filter((triviaGames) =>
+            triviaGames.GameName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            triviaGames.GameCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            triviaGames.GameDifficulty.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
     }
     return (
-        <List sx={{padding: 0}}>
+        <List sx={{ padding: 0 }}>
             {filteredTriviaGames.map((triviaGame) => (
-                <ListItem key={triviaGame.GameId} sx={{paddingLeft: 0}}>
+                <ListItem key={triviaGame.GameId} sx={{ paddingLeft: 0 }}>
                     <ListItemText primary={<Typography noWrap>{triviaGame.GameName}</Typography>}
-                                  secondary={triviaGame.GameCategory}/>
-                    <ListItemSecondaryAction sx={{marginRight: 0}}>
+                        secondary={triviaGame.GameCategory} />
+                    <ListItemSecondaryAction sx={{ marginRight: 0 }}>
                         <IconButton onClick={() => onEditClick(triviaGame.GameId)} edge="end" aria-label="edit">
-                            <EditIcon/>
+                            <EditIcon />
                         </IconButton>
                         <IconButton onClick={() => onDeleteClick(triviaGame.GameId, triviaGame.Timestamp)} edge="end" aria-label="delete">
-                            <DeleteIcon/>
+                            <DeleteIcon />
                         </IconButton>
                     </ListItemSecondaryAction>
                 </ListItem>
@@ -178,7 +186,7 @@ const ConfigurableListOfGames = ({triviaGames, searchTerm, onEditClick, onDelete
     );
 };
 
-const EditTriviaGameForm = ({open, onClose, formData, setFormData, setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity}) => {
+const EditTriviaGameForm = ({ open, onClose, formData, setFormData, setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity }) => {
 
     const handleChange = async (e) => {
         setFormData({
@@ -196,23 +204,24 @@ const EditTriviaGameForm = ({open, onClose, formData, setFormData, setSnackbarOp
     const update = async () => {
         try {
             const jsonPayload =
-                {
-                    "tableName": "TriviaGames",
-                    "operation": "UPDATE",
-                    "key": {
-                        "GameId": formData.GameId,
-                        "Timestamp": formData.Timestamp
-                    },
-                    "updateExpression": "set GameName = :GameName, GameCategory = :GameCategory, GameDifficulty = :GameDifficulty, PerQuestionTime = :PerQuestionTime, StartDate = :StartDate, EndDate = :EndDate",
-                    "expressionAttributeValues": {
-                        ":GameName": formData.GameName,
-                        ":GameCategory": formData.GameCategory,
-                        ":GameDifficulty": formData.GameDifficulty,
-                        ":PerQuestionTime": formData.PerQuestionTime,
-                        ":StartDate": formData.StartDate,
-                        ":EndDate": formData.EndDate
-                    }
+            {
+                "tableName": "TriviaGames",
+                "operation": "UPDATE",
+                "key": {
+                    "GameId": formData.GameId,
+                    "Timestamp": formData.Timestamp
+                },
+                "updateExpression": "set GameName = :GameName, Description = :Description, GameCategory = :GameCategory, GameDifficulty = :GameDifficulty, QuizTime = :QuizTime, StartDate = :StartDate, EndDate = :EndDate",
+                "expressionAttributeValues": {
+                    ":GameName": formData.GameName,
+                    ":Description": formData.Description,
+                    ":GameCategory": formData.GameCategory,
+                    ":GameDifficulty": formData.GameDifficulty,
+                    ":QuizTime": formData.QuizTime,
+                    ":StartDate": formData.StartDate,
+                    ":EndDate": formData.EndDate
                 }
+            }
 
             const data = await invokeLambdaFunction("Update_DynamoDBClient", jsonPayload)
             console.log(data)
@@ -223,7 +232,7 @@ const EditTriviaGameForm = ({open, onClose, formData, setFormData, setSnackbarOp
             );
             setSnackbarOpen(true);
 
-            setFormData({ GameName : "", GameCategory : "", GameDifficulty : "", PerQuestionTime : "", StartDate : "", EndDate: ""})
+            setFormData({ GameName: "", Description: "", GameCategory: "", GameDifficulty: "", QuizTime: "", StartDate: "", EndDate: "" })
 
         } catch (error) {
             setSnackbarSeverity('error');
@@ -253,38 +262,15 @@ const EditTriviaGameForm = ({open, onClose, formData, setFormData, setSnackbarOp
                         </Grid>
 
                         <Grid item xs={12} sx={{ margin: 2 }}>
-                            <FormControl component="fieldset">
-                                <FormLabel component="legend">Game Category</FormLabel>
-                                <RadioGroup row name="GameCategory" value={formData.GameCategory} onChange={handleChange}>
-                                    <FormControlLabel value="General" control={<Radio />} label="General" />
-                                    <FormControlLabel value="Movies" control={<Radio />} label="Movies" />
-                                    <FormControlLabel value="Music" control={<Radio />} label="Music" />
-                                    <FormControlLabel value="Books" control={<Radio />} label="Books" />
-                                    <FormControlLabel value="Sports" control={<Radio />} label="Sports" />
-                                </RadioGroup>
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12} sx={{ margin: 2 }}>
-                            <FormControl component="fieldset">
-                                <FormLabel component="legend">Game Difficulty Level</FormLabel>
-                                <RadioGroup row name="GameDifficulty" value={formData.GameDifficulty} onChange={handleChange}>
-                                    <FormControlLabel value="E" control={<Radio />} label="Easy" />
-                                    <FormControlLabel value="M" control={<Radio />} label="Medium" />
-                                    <FormControlLabel value="H" control={<Radio />} label="Hard" />
-                                </RadioGroup>
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12} sx={{ margin: 2 }}>
-                            <FormControl component="fieldset">
-                                <FormLabel component="legend">Time Limit Per Question</FormLabel>
-                                <RadioGroup row name="PerQuestionTime" value={formData.PerQuestionTime} onChange={handleChange}>
-                                    <FormControlLabel value="10" control={<Radio />} label="10 Seconds" />
-                                    <FormControlLabel value="30" control={<Radio />} label="30 Seconds" />
-                                    <FormControlLabel value="60" control={<Radio />} label="60 Seconds" />
-                                </RadioGroup>
-                            </FormControl>
+                            <TextField
+                                required
+                                fullWidth
+                                minRows={4}
+                                label="Game Description"
+                                name="Description"
+                                value={formData.Description}
+                                onChange={handleChange}
+                            />
                         </Grid>
 
                         <Grid item xs={12} sx={{ margin: 2 }}>
@@ -317,8 +303,47 @@ const EditTriviaGameForm = ({open, onClose, formData, setFormData, setSnackbarOp
                             />
                         </Grid>
 
+                        <Grid item xs={12} sx={{ margin: 2 }}>
+                            <TextField
+                                required
+                                fullWidth
+                                type="number"
+                                label="Quiz Time Limit (in minutes)"
+                                name="QuizTime"
+                                value={formData.QuizTime}
+                                onChange={handleChange}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} sx={{ margin: 2 }}>
+                            <FormControl component="fieldset">
+                                <FormLabel component="legend">Game Category</FormLabel>
+                                <RadioGroup row name="GameCategory" value={formData.GameCategory} onChange={handleChange}>
+                                    <FormControlLabel value="General" control={<Radio />} label="General" />
+                                    <FormControlLabel value="Movies" control={<Radio />} label="Movies" />
+                                    <FormControlLabel value="Music" control={<Radio />} label="Music" />
+                                    <FormControlLabel value="Books" control={<Radio />} label="Books" />
+                                    <FormControlLabel value="Sports" control={<Radio />} label="Sports" />
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12} sx={{ margin: 2 }}>
+                            <FormControl component="fieldset">
+                                <FormLabel component="legend">Game Difficulty Level</FormLabel>
+                                <RadioGroup row name="GameDifficulty" value={formData.GameDifficulty} onChange={handleChange}>
+                                    <FormControlLabel value="Easy" control={<Radio />} label="Easy" />
+                                    <FormControlLabel value="Medium" control={<Radio />} label="Medium" />
+                                    <FormControlLabel value="Hard" control={<Radio />} label="Hard" />
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
+
                         <Grid item xs={12}>
-                            <Button type="submit" variant="contained" sx={{marginTop: 2}}>Update</Button>
+                            <Button type="submit" variant="contained" sx={{ marginTop: 2 }}>Update</Button>
                         </Grid>
                     </Grid>
 

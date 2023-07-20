@@ -4,14 +4,15 @@ import { appTheme } from '../../themes/theme';
 
 import { useNavigate } from "react-router";
 import invokeLambdaFunction from "../common/InvokeLambda";
-import GameCard from './GameCard';
+import AdminGameCard from './AdminGameCard';
 
 export default function BrowseTriviaGames() {
 
     const [triviaGames, setTriviaGames] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [gamesPerPage, setGamesPerPage] = useState(9);
+    
+    const gamesPerPage = 3;
 
     const navigate = useNavigate();
     const startIndex = (currentPage - 1) * gamesPerPage;
@@ -41,7 +42,7 @@ export default function BrowseTriviaGames() {
 
 
     const handleGameClick = (id) => {
-        navigate("/GameDetail", { state: { id } });
+        navigate("/UpdateTriviaGame", { state: { id } });
         console.log(id);
     };
 
@@ -71,7 +72,7 @@ export default function BrowseTriviaGames() {
                         <Grid container spacing={4}>
                             {triviaGames.slice(startIndex, endIndex).map((triviaGame) => (
                                 <Grid item key={triviaGame} md={4} >
-                                    <GameCard triviaGame={triviaGame} onGameClick={handleGameClick} />
+                                    <AdminGameCard triviaGame={triviaGame} onGameClick={handleGameClick} />
                                 </Grid>
                             ))}
                         </Grid>

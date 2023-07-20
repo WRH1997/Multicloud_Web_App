@@ -14,9 +14,10 @@ export const handler = async (event) => {
         const {
             GameId,
             GameName,
+            Description,
             GameCategory,
             GameDifficulty,
-            PerQuestionTime,
+            QuizTime,
             StartDate,
             EndDate,
             Questions
@@ -30,9 +31,10 @@ export const handler = async (event) => {
             Item: {
                 GameId: GameId,
                 GameName: GameName,
+                Description: Description,
                 GameCategory: GameCategory,
                 GameDifficulty: GameDifficulty,
-                PerQuestionTime: PerQuestionTime,
+                QuizTime: QuizTime,
                 StartDate: StartDate,
                 EndDate: EndDate,
                 Timestamp: Timestamp,
