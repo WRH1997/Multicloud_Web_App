@@ -16,7 +16,7 @@ const DeleteTriviaGame = ({ triviaGameID, triviaGameTimestamp, open, onClose, se
                     },
                 };
 
-            const data = await invokeLambda("lambdaDynamoDBClient", jsonPayload)
+            const data = await invokeLambda("Delete_DynamoDBClient", jsonPayload)
             console.log(data)
 
             setSnackbarSeverity('success');

@@ -1,5 +1,8 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
+import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
+
+const snsClient = new SNSClient({ region: 'us-east-1' });
 
 const dbClient = new DynamoDBClient({ region: "us-east-1" });
 const dbDocumentClient = DynamoDBDocument.from(dbClient);
@@ -14,9 +17,10 @@ export const handler = async (event) => {
         const {
             GameId,
             GameName,
+            Description,
             GameCategory,
             GameDifficulty,
-            PerQuestionTime,
+            QuizTime,
             StartDate,
             EndDate,
             Questions
@@ -30,9 +34,10 @@ export const handler = async (event) => {
             Item: {
                 GameId: GameId,
                 GameName: GameName,
+                Description: Description,
                 GameCategory: GameCategory,
                 GameDifficulty: GameDifficulty,
-                PerQuestionTime: PerQuestionTime,
+                QuizTime: QuizTime,
                 StartDate: StartDate,
                 EndDate: EndDate,
                 Timestamp: Timestamp,
@@ -41,6 +46,7 @@ export const handler = async (event) => {
         };
 
         await dbDocumentClient.put(params);
+        await publishNotificationToSNSTopic(GameName, Description, GameCategory, GameDifficulty, StartDate, EndDate)
 
         const response = {
             statusCode: 200,
@@ -58,5 +64,33 @@ export const handler = async (event) => {
         };
         console.log("Response: " + JSON.stringify(response))
         return response;
+    }
+};
+
+const publishNotificationToSNSTopic = async (GameName, Description, GameCategory, GameDifficulty, StartDate, EndDate) => {
+    const topicArn = 'arn:aws:sns:us-east-1:940444391781:GameUpdates';
+    const message = `Hey, Titan! A new game is available for you and your teammates to play:
+    Game Name: ${GameName}
+    Description: ${Description}
+    Game Category: ${GameCategory}
+    Game Difficulty: ${GameDifficulty}
+    Start Date: ${StartDate}
+    End Date: ${EndDate}
+Play now!`;
+
+    const params = {
+        TopicArn: topicArn,
+        Message: message,
+        Subject: "Trivia Titans SPD10 - New Game Available to Play!"
+    };
+
+    try {
+        await snsClient.send(new PublishCommand(params));
+        console.log('Message published successfully.');
+        return { success: true, message: 'Message published successfully.' };
+    }
+    catch (error) {
+        console.error('Error publishing message:', error);
+        return { success: false, message: 'Error publishing message.', error: error.message };
     }
 };

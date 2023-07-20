@@ -1,39 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { CircularProgress, Container, CssBaseline, Grid, MenuItem, Pagination, Select, ThemeProvider, Typography } from '@mui/material';
+import { CircularProgress, Container, CssBaseline, Grid, Pagination, ThemeProvider, Typography, Select, MenuItem } from '@mui/material';
 import { appTheme } from '../../themes/theme';
-
 import { useNavigate } from "react-router";
 import invokeLambdaFunction from "../common/InvokeLambda";
-import AdminGameCard from './AdminGameCard';
+import GameCard from './GameCard';
 
-export default function BrowseTriviaGames() {
-
+export default function TriviaGameLobby() {
     const [triviaGames, setTriviaGames] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [gamesPerPage, setGamesPerPage] = useState(9);
     const [selectedCategory, setSelectedCategory] = useState('all');
-    const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-
-    const gamesPerPage = 3;
+    const [selectedDifficulty, setSelectedDifficulty] = useState('all'); 
 
     const navigate = useNavigate();
     const startIndex = (currentPage - 1) * gamesPerPage;
     const endIndex = startIndex + gamesPerPage;
     const totalPages = Math.ceil(triviaGames.length / gamesPerPage);
 
-
     useEffect(() => {
         setLoading(true);
-        fetchAllTriviaGames();
+        fetchAvailableTriviaGames();
     }, []);
 
-    const fetchAllTriviaGames = async () => {
+    const fetchAvailableTriviaGames = async () => {
         try {
             const jsonPayload = {
                 tableName: "TriviaGames",
-                operation: "SIMPLE_SCAN",
+                operation: "SCAN_WITH_FILTER_EXPR",
+                filterExpression: "StartDate <= :currentDate AND EndDate >= :currentDate",
+                expressionAttributeValues: {
+                    ":currentDate": {
+                        "S": new Date().toLocaleDateString('en-CA')
+                    }
+                }
             };
-            const data = await invokeLambdaFunction("SimpleScan_DynamoDBClient", jsonPayload)
+            const data = await invokeLambdaFunction("ScanWithFilterExpr_DynamoDBClient", jsonPayload)
             setTriviaGames(data);
             setLoading(false);
         } catch (error) {
@@ -41,8 +43,6 @@ export default function BrowseTriviaGames() {
             setLoading(false);
         }
     };
-
-
 
     const handleCategoryChange = async (value) => {
         setSelectedCategory(value);
@@ -83,22 +83,22 @@ export default function BrowseTriviaGames() {
     };
 
     const buildFilterExpression = (category, difficulty) => {
-        if (category === "all" && difficulty === "all"){
-            fetchAllTriviaGames();
-        }
-        let filterExpression = "";
+        let filterExpression = "StartDate <= :currentDate AND EndDate >= :currentDate ";
         if (category !== "all") {
-            filterExpression += `GameCategory = :category`;
+            filterExpression += `AND GameCategory = :category `;
         }
         if (difficulty !== "all") {
-            filterExpression += filterExpression ? " AND " : "";
-            filterExpression += `GameDifficulty = :difficulty`;
+            filterExpression += `AND GameDifficulty = :difficulty `;
         }
         return filterExpression;
     };
 
     const buildExpressionAttributeValues = (category, difficulty) => {
-        const expressionAttributeValues = {};
+        const expressionAttributeValues = {
+            ":currentDate": {
+                "S": new Date().toLocaleDateString('en-CA')
+            }
+        };
         if (category !== "all") {
             expressionAttributeValues[":category"] = {
                 S: category
@@ -115,11 +115,6 @@ export default function BrowseTriviaGames() {
         return expressionAttributeValues;
     };
 
-    const handleGameClick = (id) => {
-        navigate("/UpdateTriviaGame", { state: { id } });
-        console.log(id);
-    };
-
     return (
 
         <ThemeProvider theme={appTheme}>
@@ -133,17 +128,19 @@ export default function BrowseTriviaGames() {
                         <Grid container direction="column" justifyContent="center" alignItems="center" spacing={2} sx={{ my: '1rem' }}>
                             <Grid item xs={12}>
                                 <Typography variant="h2" color="primary">
-                                    Browse Trivia Games
+                                    Available Trivia Games
                                 </Typography>
                             </Grid>
                             <Grid item xs={12}>
                                 <Typography variant="body1" color="primary">
-                                    You can browse all trivia games and view their details from here.
+                                    You can browse all trivia games that are available to join, and play them with your team, or individually
                                 </Typography>
                             </Grid>
                         </Grid>
 
+
                         <Grid container spacing={4}>
+
 
                             <Grid container spacing={2} justifyContent="center" alignItems="center" sx={{ my: '1rem' }}>
                                 <Grid item xs={12} sm={6} md={4}>
@@ -180,7 +177,7 @@ export default function BrowseTriviaGames() {
 
                             {triviaGames.slice(startIndex, endIndex).map((triviaGame) => (
                                 <Grid item key={triviaGame} md={4} >
-                                    <AdminGameCard triviaGame={triviaGame} onGameClick={handleGameClick} />
+                                    <GameCard triviaGame={triviaGame} />
                                 </Grid>
                             ))}
                         </Grid>
