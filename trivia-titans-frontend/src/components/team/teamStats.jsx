@@ -99,8 +99,20 @@ const TeamPage = () => {
         setEmail("");
         setOpen(false);
     };
-    function removeTeamMember(member) {
-
+    const removeTeamMember = async function (playerEmail) {
+        //  e.preventDefault();
+        const jsonPayload2 = {
+            tableName: "teamMembers",
+            operation: "DELETE",
+            key: {
+                playerEmail: playerEmail
+            }
+        };
+        await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
+        setTeamMembers(teamMembers.filter((team) => team.playerEmail !== playerEmail));
+        const teamPlayerData = await fetchMemberTeamData(currentUser);
+        if(!teamPlayerData)
+            setIsTeamPlayer(false);
     }
     return (
         <div>
@@ -177,7 +189,13 @@ const TeamPage = () => {
                     <h3>Team Members are displayed below:</h3>
                     {teamMembers.map((team, index) => (
                         <div key={index}>
-                            <p>Player Email: {team.playerEmail.S}</p>
+                            <p>Player Email: {team.playerEmail.S} <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => removeTeamMember(team.playerEmail.S)}
+                            >
+                                Remove From Team
+                            </Button></p>
                         </div>
                     ))}
                     <div>
