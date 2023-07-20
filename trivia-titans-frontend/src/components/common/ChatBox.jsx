@@ -19,7 +19,7 @@ const Chat = () => {
         const getTeamPlayerData = async () => {
             if (currentUser) {
                 setName(currentUser.email);
-                const teamPlayerData = await fetchMemberTeamData(currentUser);
+                const teamPlayerData = await fetchMemberTeamData(currentUser.email.toString());
                 console.log(teamPlayerData);
                 if (teamPlayerData) {
                     setIsTeamPlayer(true);
