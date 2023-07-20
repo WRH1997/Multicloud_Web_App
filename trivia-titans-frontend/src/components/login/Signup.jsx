@@ -7,6 +7,7 @@ const
     HandleSignUp = () => {
         const [email,setEmail] = useState('');
         const [password,setPassword]= useState('');
+        const [displayName, setDisplayName] = useState('');
         const [formData, setFormData] = useState({
             question1: '',
             answer1: '',
@@ -26,12 +27,17 @@ const
             createUserWithEmailAndPassword(auth,email, password)
                 .then(async (userCredential) => {
                     // Sign-up success
+
                     const user = userCredential.user;
+                    await user.updateProfile({
+                        displayName: displayName
+                    });
                     const jsonPayload = {
                         tableName: "userLoginInfo",
                         operation: "CREATE",
                         item: {
                             userEmail: user.email,
+                            displayName:user.displayName,
                             secretQuestion1: formData.question1,
                             secretAnswer1: formData.answer1,
                             secretQuestion2: formData.question2,
@@ -66,6 +72,15 @@ const
                         name="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        required
+                    /><br/>
+                    <label htmlFor="displayname">Display Name:</label>
+                    <input
+                        type="text"
+                        id="displayname"
+                        name="displayname"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
                         required
                     /><br/>
                     <label htmlFor="password">Password:</label>
