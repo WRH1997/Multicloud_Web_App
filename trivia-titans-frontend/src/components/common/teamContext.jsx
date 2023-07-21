@@ -23,3 +23,14 @@ export const fetchAllTeamMembersData = async (playerTeamName) => {
     };
     return await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
 }
+export const fetchCurrentTeamStatistics = async (teamName) =>
+{
+    const jsonPayload = {
+        tableName: "teamStats",
+        operation: "READ",
+        key: {
+            teamName: teamName
+        }
+    };
+    return await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
+}
