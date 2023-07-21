@@ -5,19 +5,19 @@ import notifyJoinTeam from "./NotifyJoinTeam";
 import invokeLambdaFunction from "../common/InvokeLambda";
 import {AuthContext} from "../common/AuthContext";
 import {useNavigate} from "react-router";
-import {fetchAllTeamMembersData, fetchMemberTeamData} from "../common/teamContext";
+import {fetchAllTeamMembersData, fetchCurrentTeamStatistics, fetchMemberTeamData} from "../common/teamContext";
 import Chat from "../common/ChatBox";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
-    const [teamName,setTeamName] = useState(null);
+    const [teamName,setTeamName] = useState("");
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [isTeamPlayer,setIsTeamPlayer] = useState(false);
     const [email, setEmail] = useState("");
     const [createTeamOpen, setCreateTeamOpen] = useState(false);
     const [teamMembers,setTeamMembers] = useState(null);
-    let teamData = {};
+    const [teamStatistics, setTeamStatistics] = useState(null);
     useEffect(() => {
         if (!currentUser) {
             // if user not logged in, navigate to login
@@ -31,6 +31,9 @@ const TeamPage = () => {
                 if (teamPlayerData) {
                     setTeamName(teamPlayerData.teamName);
                     setIsTeamPlayer(true);
+                    const currentTeamStats = await fetchCurrentTeamStatistics(teamPlayerData.teamName)
+                    console.log(currentTeamStats);
+                    setTeamStatistics(currentTeamStats);
                 }
             }
         }
@@ -90,6 +93,7 @@ const TeamPage = () => {
             }
         };
         await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
+        setIsTeamPlayer(true);
     }
 
     const sendEmailInvite = () => {
@@ -204,9 +208,9 @@ const TeamPage = () => {
             {isTeamPlayer && teamMembers && (
 
                 <div className="team-stats">
-                    <p><strong>Score:</strong> {teamData.totalScore}</p>
-                    <p><strong>Win/Loss Ratio:</strong> {teamData.winLossRatio}</p>
-                    <p><strong>Total Games:</strong> {teamData.totalGames}</p>
+                    <p><strong>Score:</strong> {teamStatistics.totalScore}</p>
+                    <p><strong>Win/Loss Ratio:</strong> {teamStatistics.winLossRatio}</p>
+                    <p><strong>Total Games:</strong> {teamStatistics.totalGames}</p>
                     <h3>Team Members are displayed below:</h3>
                     {teamMembers.map((team, index) => (
                         <div key={index}>
