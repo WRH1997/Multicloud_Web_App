@@ -46,7 +46,7 @@ const GameCard = ({ triviaGame }) => {
                     </CardContent>
 
                     <CardActions sx={{ justifyContent: 'right' }}>
-                        <Button color="secondary" variant="outlined" size="small" onClick={() => navigate("/SoloGame")}>PLAY INDIVIDUALLY</Button>
+                        <Button color="secondary" variant="outlined" size="small" onClick={() => navigate("/IndividualGame")}>PLAY INDIVIDUALLY</Button>
                         <Button variant="contained" size="small" onClick={() => navigate("/TeamGameLobby")}>PLAY WITH TEAM</Button>
                     </CardActions>
 
