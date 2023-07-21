@@ -120,6 +120,7 @@ export default function IndividualGame(){
         alert(JSON.stringify(finalizedRes));
     }
 
+    //Swap hard-coded game ID with ID from data passed through props once integrated
     getGame("3b726d4f-4f9f-4b38-beb0-aa5df45dbce2");
 
 
