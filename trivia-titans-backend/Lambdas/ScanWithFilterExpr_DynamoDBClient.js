@@ -2,6 +2,7 @@ import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 const dbClient = new DynamoDBClient({ region: "us-east-1" });
 const ddbDocClient = DynamoDBDocument.from(dbClient);
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 
 /*
 Sample Request:
@@ -56,5 +57,5 @@ async function scanDynamoDBTableWithFilterExpr(tableName, filterExpression, expr
     console.error("Error", err);
   }
 
-  return results; // Return collected results
+  return results.map((item) => unmarshall(item)); // Return collected results
 }
