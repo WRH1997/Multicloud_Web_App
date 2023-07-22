@@ -33,23 +33,28 @@ class EditProfile extends React.Component{
 
 
     FetchCurrentUserData = async(userId) => {
+        console.log(userId);
         await dynamoClient.get({
             TableName: "User",
             Key: {
-                uid: userId
+                uid: userId.uid
             }
         }).promise().then((snapshot) => {
-            this.setState({
-                currentUser: {
-                    "uid": snapshot.Item.uid,
-                    "email": snapshot.Item.Email,
-                    "displayName": snapshot.Item.DisplayName,
-                    "password": snapshot.Item.Password,
-                    "phone": snapshot.Item.PhoneNumber,
-                    "photoURL": snapshot.Item.PhotoURL
-                }
-            })
-
+            try{
+                this.setState({
+                    currentUser: {
+                        "uid": snapshot.Item.uid,
+                        "email": snapshot.Item.Email,
+                        "displayName": snapshot.Item.DisplayName,
+                        "password": snapshot.Item.Password,
+                        "phone": snapshot.Item.PhoneNumber,
+                        "photoURL": snapshot.Item.PhotoURL
+                    }
+                })
+            }
+            catch(e){
+                alert("Error: Trying to edit profile of user that does not exist in 'User' table.\n\n[uid: "+this.context.uid+"]");
+            }
         }).catch(console.error);
     }
 
@@ -57,7 +62,7 @@ class EditProfile extends React.Component{
     componentDidUpdate(){
         if(this.context.uid!==this.state.currentUser.uid){
             console.log(this.context);
-            this.FetchCurrentUserData(this.context.uid);
+            this.FetchCurrentUserData(this.context);
         }
     }
 
