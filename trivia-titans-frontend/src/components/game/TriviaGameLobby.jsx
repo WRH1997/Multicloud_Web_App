@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { CircularProgress, Container, CssBaseline, Grid, Pagination, ThemeProvider, Typography, Select, MenuItem } from '@mui/material';
-import { appTheme } from '../../themes/theme';
+import { CircularProgress, Container, CssBaseline, Grid, MenuItem, Pagination, Select, ThemeProvider, Typography } from '@mui/material';
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { appTheme } from '../../themes/theme';
 import invokeLambdaFunction from "../common/InvokeLambda";
 import GameCard from './GameCard';
 
@@ -11,7 +11,7 @@ export default function TriviaGameLobby() {
     const [currentPage, setCurrentPage] = useState(1);
     const [gamesPerPage, setGamesPerPage] = useState(9);
     const [selectedCategory, setSelectedCategory] = useState('all');
-    const [selectedDifficulty, setSelectedDifficulty] = useState('all'); 
+    const [selectedDifficulty, setSelectedDifficulty] = useState('all');
 
     const navigate = useNavigate();
     const startIndex = (currentPage - 1) * gamesPerPage;

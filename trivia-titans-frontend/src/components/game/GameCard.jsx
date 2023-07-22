@@ -1,6 +1,5 @@
-import React from 'react';
-import { useNavigate } from "react-router";
 import { Button, Card, CardActions, CardContent, CssBaseline, Grid, ThemeProvider, Typography } from '@mui/material';
+import { useNavigate } from "react-router";
 import { appTheme } from '../../themes/theme';
 
 const GameCard = ({ triviaGame }) => {
@@ -47,7 +46,12 @@ const GameCard = ({ triviaGame }) => {
 
                     <CardActions sx={{ justifyContent: 'right' }}>
                         <Button color="secondary" variant="outlined" size="small" onClick={() => navigate("/IndividualGame")}>PLAY INDIVIDUALLY</Button>
-                        <Button variant="contained" size="small" onClick={() => navigate("/TeamGameLobby")}>PLAY WITH TEAM</Button>
+                        <Button variant="contained" size="small" onClick={() => navigate("/TeamGameLobby", {
+                            state: {
+                                triviaGame: triviaGame,
+
+                            }
+                        })}>PLAY WITH TEAM</Button>
                     </CardActions>
 
                 </Card>
