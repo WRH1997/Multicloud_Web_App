@@ -1,37 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, IconButton } from '@mui/material';
+import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import AWS from 'aws-sdk';
 
 const Leaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
+  const [sortOrder, setSortOrder] = useState('desc');
+
+  const fetchData = async () => {
+    try {
+      AWS.config.update({
+      });
+      const data = {
+          tableName: "TriviaLeaderboard",
+          sortOrder: sortOrder
+      };
+  
+      const params = {
+        FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:teamLeaderboard',
+        Payload: JSON.stringify(data)
+      };
+      const lambda = new AWS.Lambda();
+  
+      const response = await lambda.invoke(params).promise();
+      const array = JSON.parse(response.Payload); 
+      console.log(array);
+      setLeaderboardData(array);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        AWS.config.update({
-        });
-        const data = {
-            tableName: "TriviaLeaderboard"
-        };
-    
-        const params = {
-          FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:teamLeaderboard',
-          Payload: JSON.stringify(data)
-        };
-        const lambda = new AWS.Lambda();
-    
-        const response = await lambda.invoke(params).promise();
-        const array = JSON.parse(response.Payload); 
-        console.log(array);
-        setLeaderboardData(array);
-      } catch (error) {
-        console.error('Error fetching leaderboard:', error);
-      }
-    };
-
     fetchData();
-  }, []);
+  }, [sortOrder]);
+
+  const handleSortToggle = () => {
+    setSortOrder(prevSortOrder => (prevSortOrder === 'desc' ? 'asc' : 'desc'));
+  };
 
   return (
     <div style={{ textAlign: 'center', marginTop: '30px' }}>
@@ -41,7 +47,12 @@ const Leaderboard = () => {
           <TableHead>
             <TableRow>
               <TableCell>Team Name</TableCell>
-              <TableCell align="right">Score</TableCell>
+              <TableCell align="right">
+                Score
+                <IconButton onClick={handleSortToggle}>
+                  {sortOrder === 'desc' ? <ArrowDownward /> : <ArrowUpward />}
+                </IconButton>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
