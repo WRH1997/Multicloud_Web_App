@@ -8,6 +8,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {useLocation, useNavigate} from "react-router-dom";
 import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
+import {createEmailIdentity} from "../common/AuthContext";
 
 
 const Login = () => {
@@ -45,7 +46,7 @@ const Login = () => {
                     } else {
                         await handleMfaLogin(result.user);
                     }
-
+                navigate(-1);
                 }
             ).catch((error) => {
             const errorCode = error.code;
@@ -185,7 +186,8 @@ const Login = () => {
         console.log("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
         //After Completing Registration, perform whatever actions you want here
-        subscribeToGameUpdates(userEmail);
+        await subscribeToGameUpdates(userEmail);
+        await createEmailIdentity(userEmail);
     };
     return (
         <Container component="main" maxWidth="xs">
