@@ -11,6 +11,7 @@ const SubmitForm = () => {
   const question_result = ['Incorrect','Correct'];
 
   const [inputs, setInputs] = useState([]);
+  const [explanation, setExplanation] = useState([]);
   const [verdict, setVerdict] = useState([]);
   const [quesText, setQuesText] = useState('');
   const [categVal, setCategVal] = useState(category[0]);
@@ -20,6 +21,7 @@ const SubmitForm = () => {
   const addInput = () => {
     setInputs([...inputs, '']);
     setVerdict([...verdict, question_result[0]]);
+    setExplanation([...explanation, '']);
   };
 
   const handleChangeQuesText = (text) => {
@@ -44,6 +46,12 @@ const SubmitForm = () => {
     const updatedVerdict = [...verdict];
     updatedVerdict[index] = val;
     setVerdict(updatedVerdict);
+  }
+
+  const handleExplanationChange = (index, val) => {
+    const updatedExplanation = [...explanation];
+    updatedExplanation[index] = val;
+    setExplanation(updatedExplanation);
   }
 
   const getTag = async (text) => {
@@ -84,7 +92,8 @@ const SubmitForm = () => {
     };
 
     inputs.forEach((input, index) => {
-      data.item.options.push({ text: input, verdict: verdict[index] });
+      data.item.options.push({ text: input, verdict: verdict[index], explanation: explanation
+      [index] });
     });
 
     AWS.config.update({
@@ -104,38 +113,6 @@ const SubmitForm = () => {
       console.log('Error:', error);
     }
     console.log(data.item.options);
-  };
-
-  const handleLeaderboard = async (event) => {
-    event.preventDefault();
-
-    const data = {
-      TableName: 'TriviaLeaderboard',
-      SortAttribute:'Score',
-      SortOrder: 'DESCENDING',
-      Filters: [
-        { attribute: 'GameId', operator: '>', value: '1', type: 'S'},
-        { attribute: 'Score', operator: '>', value: '40', type: 'N'}
-      ]
-    };
-
-    AWS.config.update({
-    });
-
-    const params = {
-      FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:teamLeaderboard',
-      Payload: JSON.stringify(data)
-    };
-    const lambda = new AWS.Lambda();
-
-    try {
-      const response = await lambda.invoke(params).promise();
-      console.log(response);
-      const data = JSON.parse(response.Payload);
-      console.log(data);
-    } catch (error) {
-      console.log('Error:', error);
-    }
   };
 
     return (
@@ -168,6 +145,11 @@ const SubmitForm = () => {
                     ))
                   }
                 </select>
+                <input
+                  style={{ marginLeft: '5px' }}
+                  onChange={(event) => handleExplanationChange(index, event.target.value)}
+                  placeholder="Explanation (optional)"
+                />
               </div>
             ))}
           </div>
