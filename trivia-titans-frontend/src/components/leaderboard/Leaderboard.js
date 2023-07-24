@@ -10,9 +10,6 @@ const Leaderboard = () => {
   const fetchData = async () => {
     try {
       AWS.config.update({
-        accessKeyId: 'AKIA5V5W2TFS47B4Y3UC',
-        secretAccessKey: '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',
-        region: 'us-east-1'
       });
       const data = {
           tableName: "TriviaLeaderboard"
