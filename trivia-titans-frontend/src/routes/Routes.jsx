@@ -8,6 +8,7 @@ import HandleSignUp from "../components/login/Signup";
 import Logout from "../components/login/Logout";
 import Login from "../components/login/Login";
 import QuestForm from "components/admin/QuestForm";
+import Leaderboard from "../components/leaderboard/Leaderboard";
 
 const AppRoutes = () => {
     return (
@@ -20,6 +21,7 @@ const AppRoutes = () => {
             <Route path='Login' element={<Login/>} />
             <Route path='Logout' element={<Logout/>} />
             <Route path='CreateTriviaQuestions' element={<QuestForm/>} />
+            <Route path='Leaderboard' element={<Leaderboard/>} />
         </Routes>
     );
 };
