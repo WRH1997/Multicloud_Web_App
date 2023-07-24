@@ -18,6 +18,7 @@ import IndividualGame from "../components/game/individual/IndividualGame";
 import TeamGameLobby from "../components/game/team/TeamGameLobby"
 import TeamTriviaGame from "../components/game/team/TeamTriviaGame"
 import TeamGameResults from "components/game/team/TeamGameResults";
+import Chatbot from '../components/common/Chatbot';
 
 const AppRoutes = () => {
     return (
@@ -40,6 +41,7 @@ const AppRoutes = () => {
             <Route path='/TeamTriviaGame' element={<TeamTriviaGame />} />
             <Route path='/TeamGameResults' element={<TeamGameResults />} />
         </Routes>
+        <Chatbot />
         </AuthProvider>
     );
 };
