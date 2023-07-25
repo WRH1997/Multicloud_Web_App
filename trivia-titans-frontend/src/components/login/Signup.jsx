@@ -1,8 +1,9 @@
 import {getAuth} from "firebase/auth";
 import {useState} from "react";
-import {createUserWithEmailAndPassword} from "firebase/auth";
+import {createUserWithEmailAndPassword,updateProfile} from "firebase/auth";
 import invokeLambdaFunction from "../common/InvokeLambda";
 import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
+import {createEmailIdentity} from "../common/AuthContext";
 
 const
     HandleSignUp = () => {
@@ -30,9 +31,7 @@ const
                     // Sign-up success
 
                     const user = userCredential.user;
-                    await user.updateProfile({
-                        displayName: displayName
-                    });
+                    console.log(user);
                     const jsonPayload = {
                         tableName: "userLoginInfo",
                         operation: "CREATE",
@@ -48,11 +47,16 @@ const
                             type: "USER"
                         }
                     };
-                    const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
+
+                    await updateProfile(user,{
+                        displayName: displayName
+                    });
+                    const lambdaResponse = await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
                     console.log("Sign-up successful!", user);
 
                     // You can redirect the user to a new page or perform other actions here
-                    subscribeToGameUpdates(user.email);
+                    await subscribeToGameUpdates(user.email);
+                    await createEmailIdentity(user.email);
                 })
                 .catch((error) => {
                     // Sign-up error
