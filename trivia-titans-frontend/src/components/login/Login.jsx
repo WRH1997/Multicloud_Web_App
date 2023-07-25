@@ -46,7 +46,7 @@ const Login = () => {
                     } else {
                         await handleMfaLogin(result.user);
                     }
-                navigate(-1);
+
                 }
             ).catch((error) => {
             const errorCode = error.code;
@@ -158,7 +158,7 @@ const Login = () => {
         console.log(await invokeLambda("lambdaDynamoDBClient", jsonPayload));
         if (answer === expectedAnswer) {
             console.log("MFA USER LOGIN SUCCESS ");
-            navigate(from);
+            navigate(-1);
         } else {
             console.log("MFA USER LOGIN FAILED!! wrong answer ");
             Logout();
