@@ -13,8 +13,12 @@ import {UpdateTriviaGame} from "../components/admin/ConfigureTriviaGameConfigura
 import BrowseTriviaGames from "../components/admin/BrowseTriviaGames"
 import TeamPage from "../components/team/teamStats";
 import Chat from "../components/common/ChatBox";
-import TriviaGameLobby from "components/game/TriviaGameLobby";
-import IndividualGame from "components/game/individual/IndividualGame";
+import TriviaGameLobby from "../components/game/TriviaGameLobby";
+import IndividualGame from "../components/game/individual/IndividualGame";
+import TeamGameLobby from "../components/game/team/TeamGameLobby"
+import TeamTriviaGame from "../components/game/team/TeamTriviaGame"
+import TeamGameResults from "components/game/team/TeamGameResults";
+import Chatbot from '../components/common/Chatbot';
 
 const AppRoutes = () => {
     return (
@@ -33,7 +37,11 @@ const AppRoutes = () => {
             <Route path="/BrowseTriviaGames" element={<BrowseTriviaGames />} />
             <Route path="/TriviaGameLobby" element={<TriviaGameLobby />} />
             <Route path='/individualGame' element={<IndividualGame />} />
+            <Route path='/TeamGameLobby' element={<TeamGameLobby />} />
+            <Route path='/TeamTriviaGame' element={<TeamTriviaGame />} />
+            <Route path='/TeamGameResults' element={<TeamGameResults />} />
         </Routes>
+        <Chatbot />
         </AuthProvider>
     );
 };
