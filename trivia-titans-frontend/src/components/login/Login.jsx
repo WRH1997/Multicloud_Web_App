@@ -8,6 +8,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {useLocation, useNavigate} from "react-router-dom";
 import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
+import {createEmailIdentity} from "../common/AuthContext";
 
 
 const Login = () => {
@@ -157,7 +158,7 @@ const Login = () => {
         console.log(await invokeLambda("lambdaDynamoDBClient", jsonPayload));
         if (answer === expectedAnswer) {
             console.log("MFA USER LOGIN SUCCESS ");
-            navigate(from);
+            navigate(-1);
         } else {
             console.log("MFA USER LOGIN FAILED!! wrong answer ");
             Logout();
@@ -185,7 +186,8 @@ const Login = () => {
         console.log("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
         //After Completing Registration, perform whatever actions you want here
-        subscribeToGameUpdates(userEmail);
+        await subscribeToGameUpdates(userEmail);
+        await createEmailIdentity(userEmail);
     };
     return (
         <Container component="main" maxWidth="xs">
