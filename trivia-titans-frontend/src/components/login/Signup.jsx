@@ -1,12 +1,15 @@
 import {getAuth} from "firebase/auth";
 import {useState} from "react";
-import {createUserWithEmailAndPassword} from "firebase/auth";
+import {createUserWithEmailAndPassword,updateProfile} from "firebase/auth";
 import invokeLambdaFunction from "../common/InvokeLambda";
+import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
+import {createEmailIdentity} from "../common/AuthContext";
 
 const
     HandleSignUp = () => {
         const [email,setEmail] = useState('');
         const [password,setPassword]= useState('');
+        const [displayName, setDisplayName] = useState('');
         const [formData, setFormData] = useState({
             question1: '',
             answer1: '',
@@ -24,27 +27,36 @@ const
         const performSignUp = () => {
             const auth = getAuth();
             createUserWithEmailAndPassword(auth,email, password)
-                .then((userCredential) => {
+                .then(async (userCredential) => {
                     // Sign-up success
+
                     const user = userCredential.user;
+                    console.log(user);
                     const jsonPayload = {
-                        tableName:"userLoginInfo",
+                        tableName: "userLoginInfo",
                         operation: "CREATE",
                         item: {
                             userEmail: user.email,
+                            displayName:user.displayName,
                             secretQuestion1: formData.question1,
                             secretAnswer1: formData.answer1,
                             secretQuestion2: formData.question2,
                             secretAnswer2: formData.answer2,
                             secretQuestion3: formData.question3,
                             secretAnswer3: formData.answer3,
-                            type:"USER"
+                            type: "USER"
                         }
                     };
-                    const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient",jsonPayload);
+
+                    await updateProfile(user,{
+                        displayName: displayName
+                    });
+                    const lambdaResponse = await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
                     console.log("Sign-up successful!", user);
 
                     // You can redirect the user to a new page or perform other actions here
+                    await subscribeToGameUpdates(user.email);
+                    await createEmailIdentity(user.email);
                 })
                 .catch((error) => {
                     // Sign-up error
@@ -66,6 +78,15 @@ const
                         name="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        required
+                    /><br/>
+                    <label htmlFor="displayname">Display Name:</label>
+                    <input
+                        type="text"
+                        id="displayname"
+                        name="displayname"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
                         required
                     /><br/>
                     <label htmlFor="password">Password:</label>

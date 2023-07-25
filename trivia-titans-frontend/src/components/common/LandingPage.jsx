@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import React from 'react';
 import { Grid, Typography, Button } from '@mui/material';
+import Chatbot from './Chatbot';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function LandingPage() {
           alignItems="flex-start"
           height="100%"
         >
+          <Chatbot />
           <Typography variant="h2" sx={{
             marginBottom: 5,
           }}>
@@ -54,9 +56,15 @@ export default function LandingPage() {
           </Button>
           <Button
             variant="contained"
-            onClick={() => navigate("/CreateTriviaGame")}
+            onClick={() => navigate("/ConfigureTriviaGames")}
           >
-            Admin Feature: Create Trivia Game
+            Manage Trivia Games
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/TriviaGameLobby")}
+          >
+            Trivia Game Lobby
           </Button>
           <Button
               variant="contained"
@@ -70,8 +78,21 @@ export default function LandingPage() {
           >
         Login
           </Button>
+          <Button
+              variant="contained"
+              onClick={() => navigate("/ManageTeams")}
+          >
+            Team Management
+          </Button>
+          <Button
+              variant="contained"
+              onClick={() => navigate("/EditProfile")}
+          >
+            Edit Profile
+          </Button>
         </Grid>
       </Grid>
     </Grid>
+
   );
 }
