@@ -7,6 +7,8 @@ import EditProfile from "../components/userProfile/EditProfile"
 import HandleSignUp from "../components/login/Signup";
 import Logout from "../components/login/Logout";
 import Login from "../components/login/Login";
+import QuestForm from "components/admin/QuestForm";
+import Leaderboard from "../components/leaderboard/Leaderboard";
 import {AuthProvider} from "../components/common/AuthContext";
 import ConfigureTriviaGames from "../components/admin/ConfigureTriviaGames";
 import {UpdateTriviaGame} from "../components/admin/ConfigureTriviaGameConfigurations/UpdateTriviaGame";
@@ -31,6 +33,8 @@ const AppRoutes = () => {
             <Route path='SignUp' element={<HandleSignUp/>} />
             <Route path='Login' element={<Login/>} />
             <Route path='Logout' element={<Logout/>} />
+            <Route path='CreateTriviaQuestions' element={<QuestForm/>} />
+            <Route path='Leaderboard' element={<Leaderboard/>} />
             <Route path = 'ManageTeams' element = {<TeamPage/>} />
             <Route path='ConfigureTriviaGames' element={<ConfigureTriviaGames />} />
             <Route path="/UpdateTriviaGame" element={<UpdateTriviaGame />} />
