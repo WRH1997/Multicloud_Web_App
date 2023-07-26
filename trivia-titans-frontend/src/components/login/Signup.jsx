@@ -51,9 +51,20 @@ const
                     await updateProfile(user,{
                         displayName: displayName
                     });
-                    const lambdaResponse = await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
+                    await invokeLambdaFunction("Create_DynamoDBClient", jsonPayload);
                     console.log("Sign-up successful!", user);
+                    const userProfileJsonPayload =
+                        {
+                            tableName: "User",
+                            operation: "CREATE",
+                            item: {
+                                Email: user.email,
+                                displayName:user.displayName,
+                                uid: user.uid
 
+                            }
+                        }   ;
+                    await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);
                     // You can redirect the user to a new page or perform other actions here
                     await subscribeToGameUpdates(user.email);
                     await createEmailIdentity(user.email);
