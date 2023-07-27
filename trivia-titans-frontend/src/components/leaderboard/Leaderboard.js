@@ -14,7 +14,6 @@ const Leaderboard = () => {
       });
 
       const currentTime = new Date().toISOString();
-      console.log("DFGFD", currentTime);
       const days = getDaysForFilter(filter);
 
       const data = {
@@ -31,7 +30,6 @@ const Leaderboard = () => {
   
       const response = await lambda.invoke(params).promise();
       const array = JSON.parse(response.Payload);
-      console.log("sdfsfsfd",array);
       setLeaderboardData(array);
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
