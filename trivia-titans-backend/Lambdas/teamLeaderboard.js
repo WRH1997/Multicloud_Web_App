@@ -9,18 +9,25 @@ export const handler = async (event) => {
     };
 
     const scanResult = await dbClient.send(new ScanCommand(params));
+    
+    const currentTime = new Date(event.time);
+    currentTime.setDate(currentTime.getDate() - event.days);
+    const dateThreshold = currentTime.toISOString();
 
     const teamScores = new Map();
 
     scanResult.Items.forEach(item => {
       const teamName = item.teamName.S;
       const score = parseInt(item.score.N);
+      const timestamp = new Date(item.timestamp.S).toISOString();
 
-      if (!teamScores.has(teamName)) {
-        teamScores.set(teamName, 0);
+      if (timestamp >= dateThreshold) {
+        if (!teamScores.has(teamName)) {
+          teamScores.set(teamName, 0);
+        }
+
+        teamScores.set(teamName, teamScores.get(teamName) + score);
       }
-
-      teamScores.set(teamName, teamScores.get(teamName) + score);
     });
 
     const leaderboard = [];
