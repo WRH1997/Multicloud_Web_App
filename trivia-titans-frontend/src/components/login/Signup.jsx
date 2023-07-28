@@ -1,9 +1,10 @@
 import {getAuth} from "firebase/auth";
-import {useState} from "react";
+import React, {useState} from "react";
 import {createUserWithEmailAndPassword,updateProfile} from "firebase/auth";
 import invokeLambdaFunction from "../common/InvokeLambda";
 import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
 import {createEmailIdentity} from "../common/AuthContext";
+import {ToastContainer,toast} from "react-toastify";
 
 const
     HandleSignUp = () => {
@@ -31,7 +32,6 @@ const
                     // Sign-up success
 
                     const user = userCredential.user;
-                    console.log(user);
                     const jsonPayload = {
                         tableName: "userLoginInfo",
                         operation: "CREATE",
@@ -51,9 +51,20 @@ const
                     await updateProfile(user,{
                         displayName: displayName
                     });
-                    const lambdaResponse = await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
-                    console.log("Sign-up successful!", user);
+                    await invokeLambdaFunction("Create_DynamoDBClient", jsonPayload);
+                    toast.success("Sign-up successful!");
+                    const userProfileJsonPayload =
+                        {
+                            tableName: "User",
+                            operation: "CREATE",
+                            item: {
+                                Email: user.email,
+                                displayName:user.displayName,
+                                uid: user.uid
 
+                            }
+                        };
+                    await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);
                     // You can redirect the user to a new page or perform other actions here
                     await subscribeToGameUpdates(user.email);
                     await createEmailIdentity(user.email);
@@ -62,13 +73,14 @@ const
                     // Sign-up error
                     const errorCode = error.code;
                     const errorMessage = error.message;
-                    console.error("Sign-up error:", errorCode, errorMessage);
+                    toast.error("Sign-up error:" + errorMessage);
                     // Handle the error and display an appropriate message to the user
                 });
 
         }
         return (
             <div>
+                <ToastContainer />
                 <h1>Sign Up</h1>
                 <form>
                     <label htmlFor="email">Email:</label>
