@@ -1,12 +1,20 @@
 import React from 'react';
 import '../../themes/EditProfile.css';
 import {AuthContext} from "../common/AuthContext";
+import {getAuth} from "firebase/auth";
+import {createUserWithEmailAndPassword,updateProfile, updateCurrentUser, updateEmail, updatePassword, updatePhoneNumber} from "firebase/auth";
+import firebaseClient from '../common/firebase';
+import {useNavigate} from 'react-router-dom';
+
+
 const AWS = require("aws-sdk");
 AWS.config.region = 'us-east-1';
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
     IdentityPoolId: 'us-east-1:79432309-bc2e-447e-86b7-84c5b115e0e0',
 });
 const dynamoClient = new AWS.DynamoDB.DocumentClient({});
+const app = firebaseClient;
+const auth = getAuth();
 
 
 class EditProfile extends React.Component{
@@ -19,7 +27,6 @@ class EditProfile extends React.Component{
             "email": "",
             "displayName": "",
             "password": "",
-            "phone": "",
             "photoURL": ""
         }
     }
@@ -33,59 +40,71 @@ class EditProfile extends React.Component{
 
 
     FetchCurrentUserData = async(userId) => {
-        console.log(userId);
-        await dynamoClient.get({
-            TableName: "User",
-            Key: {
-                uid: userId.uid
+        this.setState({
+            currentUser: {
+                "uid": auth.currentUser.uid,
+                "email": auth.currentUser.email,
+                "displayName": auth.currentUser.displayName,
+                "password": "**********",
+                "photoURL": auth.currentUser.photoURL
             }
-        }).promise().then((snapshot) => {
-            try{
-                this.setState({
-                    currentUser: {
-                        "uid": snapshot.Item.uid,
-                        "email": snapshot.Item.Email,
-                        "displayName": snapshot.Item.DisplayName,
-                        "password": snapshot.Item.Password,
-                        "phone": snapshot.Item.PhoneNumber,
-                        "photoURL": snapshot.Item.PhotoURL
-                    }
-                })
-            }
-            catch(e){
-                alert("Error: Trying to edit profile of user that does not exist in 'User' table.\n\n[uid: "+this.context.uid+"]");
-            }
-        }).catch(console.error);
+        })
     }
 
 
     componentDidUpdate(){
         if(this.context.uid!==this.state.currentUser.uid){
-            console.log(this.context);
             this.FetchCurrentUserData(this.context);
         }
     }
 
-
-    Submit = async (event) => {
-        event.preventDefault();
-        let updateParams = {
-            TableName: "User",
-            Key: {
-                uid: this.state.currentUser.uid
-            },
-            UpdateExpression: "set DisplayName = :DisplayName, Email = :Email, Password = :Password, PhoneNumber = :PhoneNumber, PhotoURL = :PhotoURL",
-            ExpressionAttributeValues:{
-                ":DisplayName": this.state.currentUser.displayName,
-                ":Email": this.state.currentUser.email,
-                ":Password": this.state.currentUser.password,
-                ":PhoneNumber":this.state.currentUser.phoneNumber,
-                ":PhotoURL": this.state.currentUser.photoURL
-            }
-        }
-        await dynamoClient.update(updateParams).promise();
-    }
     
+    Submit = async (event) =>{
+        event.preventDefault();
+        console.log(this.state.currentUser);
+        let currUser = auth.currentUser;
+        let currEmail = auth.currentUser.email;
+        try{
+            await updateEmail(currUser, this.state.currentUser.email);
+            await updatePassword(currUser, this.state.currentUser.password);
+            await updateProfile(currUser, {
+                displayName: this.state.currentUser.displayName,
+                photoURL: this.state.currentUser.photoURL
+            })
+
+            let rdParams = {
+                TableName: 'userLoginInfo',
+                Key: {'userEmail': currEmail}
+            };
+            let data = await dynamoClient.get(rdParams).promise();
+            let item = data.Item;
+            console.log(item);
+            let insertParams = {
+                TableName: "userLoginInfo",
+                Item:{
+                    userEmail: this.state.currentUser.email,
+                    displayName: this.state.currentUser.displayName,
+                    secretAnswer1:  item.secretAnswer1,
+                    secretAnswer2:  item.secretAnswer2,
+                    secretAnswer3:  item.secretAnswer3,
+                    secretQuestion1: item.secretQuestion1,
+                    secretQuestion2: item.secretQuestion2,
+                    secretQuestion3: item.secretQuestion3
+                }
+            }
+            await dynamoClient.put(insertParams).promise();
+            await dynamoClient.delete(rdParams).promise();
+            alert('Profile Updated Successfully!\nRedirecting to login...');
+            let temp = window.location.href;
+            let temp2 = temp.toLowerCase().split("/editprofile")[0];
+            let redirect = temp2 + "/login";
+            window.location.href = redirect;
+        }
+        catch(e){
+            console.log(e);
+        }
+    }
+
 
     render(){
         return(
@@ -101,9 +120,6 @@ class EditProfile extends React.Component{
                         <br></br><br></br>
                         <label htmlFor='password' className='form-lbl'>Password: </label>
                         <input type='password' name='password' className='password' onChange={this.OnChange} placeholder={this.state.currentUser.password}></input>
-                        <br></br><br></br>
-                        <label htmlFor='phone' className='form-lbl'>Password: </label>
-                        <input type='text' name='phoneNumber' className='phoneNumber' onChange={this.OnChange} placeholder={this.state.currentUser.phone}></input>
                         <br></br><br></br>
                         <label htmlFor='photoURL' className='form-lbl'>Profile Pic URL: </label>
                         <input type='text' name='photoURL' className='photoURL' onChange={this.OnChange} placeholder={this.state.currentUser.photoURL}></input>
