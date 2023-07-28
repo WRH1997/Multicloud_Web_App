@@ -45,6 +45,7 @@ const TeamPage = () => {
             if (isTeamPlayer) {
                 const teamMemberData = await fetchAllTeamMembersData(teamName);
                 setTeamMembers(teamMemberData);
+                console.log(teamMemberData);
             }
         }
         getTeamMemberList();

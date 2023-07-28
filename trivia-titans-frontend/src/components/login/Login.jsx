@@ -1,4 +1,4 @@
-import { getAuth, signInWithPopup,signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup,signInWithEmailAndPassword,sendPasswordResetEmail,GoogleAuthProvider } from "firebase/auth";
 import React, {useState} from "react";
 import {Modal, Paper, Box, Typography, Grid, Container, InputAdornment, IconButton} from '@mui/material';import invokeLambda from "../common/InvokeLambda";
 import {Button, TextField} from "@mui/material";
@@ -9,7 +9,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {useLocation, useNavigate} from "react-router-dom";
 import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
 import {createEmailIdentity} from "../common/AuthContext";
-
+import {ToastContainer,toast} from "react-toastify";
 
 const Login = () => {
     const routeLocation = useLocation();
@@ -32,6 +32,7 @@ const Login = () => {
     const [mfaModalIsOpen, setMfaModalIsOpen] = useState(false);
     const selectedQuestion = Math.floor(Math.random() * 2) + 1;
     const navigate = useNavigate();
+
 
     const handleLogin = async (e) => {
 
@@ -129,6 +130,23 @@ const Login = () => {
             [e.target.name]: e.target.value,
         });
     };
+        const handleResetPassword = () => {
+            const auth = getAuth();
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    // Password reset email sent!
+                    console.log("Password reset email sent to user!");
+                    // You can add toast here to notify user about the email sent
+                })
+                .catch((error) => {
+                    // An error occurred
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    // ..
+                    console.log("Failed to send password reset email: ", errorCode, errorMessage);
+                    // You can add toast here to notify user about the error
+                });
+        };
     const handleChangeMfaModal = (e) => {
         setAnswer(e.target.value);
     };
@@ -155,10 +173,10 @@ const Login = () => {
                 break;
         }
         if (answer === expectedAnswer) {
-            console.log("MFA USER LOGIN SUCCESS ");
+            toast.success("MFA USER LOGIN SUCCESS ");
             navigate(-1);
         } else {
-            console.log("MFA USER LOGIN FAILED!! wrong answer ");
+            toast.error("MFA USER LOGIN FAILED!! wrong answer ");
             Logout();
         }
         setMfaModalIsOpen(false);
@@ -202,6 +220,7 @@ const Login = () => {
     };
     return (
         <Container component="main" maxWidth="xs">
+            <ToastContainer/>
             <div>
                 <Typography component="h1" variant="h5">
                     Login
@@ -253,6 +272,14 @@ const Login = () => {
                         color="primary"
                     >
                         Login
+                    </Button>
+                    <Button
+                        onClick={handleResetPassword}
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                    >
+                        Reset Password
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
