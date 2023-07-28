@@ -154,8 +154,6 @@ const Login = () => {
                 expectedAnswer = userMfaData.secretAnswer3;
                 break;
         }
-        console.log(answer, expectedAnswer, selectedQuestion);
-        console.log(await invokeLambda("lambdaDynamoDBClient", jsonPayload));
         if (answer === expectedAnswer) {
             console.log("MFA USER LOGIN SUCCESS ");
             navigate(-1);
@@ -181,8 +179,21 @@ const Login = () => {
                 type: "USER"
             }
         }
+        const currentUser = getAuth().currentUser;
+        const userProfileJsonPayload =
+            {
+                tableName: "User",
+                operation: "CREATE",
+                item: {
+                    Email: currentUser.email,
+                    displayName:currentUser.displayName,
+                    uid: currentUser.uid
+                }
+            };
+        await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);
 
-        const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
+        await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
+
         console.log("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
         //After Completing Registration, perform whatever actions you want here

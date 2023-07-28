@@ -34,7 +34,6 @@ const TeamPage = () => {
                     setTeamName(teamPlayerData.teamName);
                     setIsTeamPlayer(true);
                     const currentTeamStats = await fetchCurrentTeamStatistics(teamPlayerData.teamName)
-                    console.log(currentTeamStats);
                     setTeamStatistics(currentTeamStats);
                 }
             }
@@ -46,7 +45,6 @@ const TeamPage = () => {
             if (isTeamPlayer) {
                 const teamMemberData = await fetchAllTeamMembersData(teamName);
                 setTeamMembers(teamMemberData);
-                console.log(teamMemberData);
             }
         }
         getTeamMemberList();
@@ -72,7 +70,7 @@ const TeamPage = () => {
         setCreateTeamOpen(false);
     };
     const createNewTeam = async () => {
-        console.log(`creating new team with name ${teamName}`);
+        toast.success(`creating new team with name ${teamName}`);
         const jsonPayload = {
             tableName: "teamStats",
             operation: "CREATE",
@@ -84,7 +82,7 @@ const TeamPage = () => {
             }
         };
         await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
-        console.log(`Joining team ${teamName} as ADMIN`);
+        toast.success(`Joining team ${teamName} as ADMIN`);
         const jsonPayload2 = {
             tableName: "teamMembers",
             operation: "CREATE",
@@ -100,7 +98,7 @@ const TeamPage = () => {
 
     const sendEmailInvite = () => {
         // Add your code here to handle the invite
-        console.log(`Invitation sent to: ${email}`);
+        toast.success(`Invitation sent to: ${email}`);
         notifyJoinTeam(email, 'TestTeam');
         setEmail("");
         setOpen(false);
@@ -129,7 +127,7 @@ const TeamPage = () => {
                 },
                 "updateExpression": "set teamPermission = :teamPermission",
                 "expressionAttributeValues": {
-                    ":teamPermission": "MEMBER",
+                    ":teamPermission": "ADMIN",
                 }
             }
         await invokeLambdaFunction('Update_DynamoDBClient', targetUserUpdatePayload);
@@ -143,7 +141,7 @@ const TeamPage = () => {
 
             // if admin removes themselves from the team, the whole team is disbanded.
             if (teamPlayerData.teamPermission === 'ADMIN') {
-                console.log("player remove requested " +teamPlayerData.playerEmail);
+                toast.success("player remove requested " +teamPlayerData.playerEmail);
                 for (let item of teamMembers) {
                     const deleteUser = {
                         tableName: "teamMembers",
@@ -153,7 +151,7 @@ const TeamPage = () => {
                         }
                     };
                     await invokeLambdaFunction('Delete_DynamoDBClient', deleteUser);
-                    console.log("deleted player "+ item.playerEmail.S +" from team" +item.teamName.S);
+                    toast.success("deleted player "+ item.playerEmail.S +" from team" +item.teamName.S);
                     setTeamMembers(teamMembers.filter((team) => team.playerEmail !== item.playerEmail.S));
                     setIsTeamPlayer(false);
                 }
@@ -254,14 +252,14 @@ const TeamPage = () => {
                 >
                 Remove From Team
                 </Button></p>
-                    <p>
+
                 <Button
                 variant="contained"
                 color="secondary"
                 onClick={() => promoteTeamMember(team.playerEmail.S)}
                 >
                 Promote to Team Admin
-                </Button></p>
+                </Button>
                 </div>
                 ))}
                 <div>
