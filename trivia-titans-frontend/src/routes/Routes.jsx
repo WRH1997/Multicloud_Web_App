@@ -14,17 +14,18 @@ import ConfigureTriviaGames from "../components/admin/ConfigureTriviaGames";
 import {UpdateTriviaGame} from "../components/admin/ConfigureTriviaGameConfigurations/UpdateTriviaGame";
 import BrowseTriviaGames from "../components/admin/BrowseTriviaGames"
 import TeamPage from "../components/team/teamStats";
-import Chat from "../components/common/ChatBox";
 import TriviaGameLobby from "../components/game/TriviaGameLobby";
 import IndividualGame from "../components/game/individual/IndividualGame";
 import TeamGameLobby from "../components/game/team/TeamGameLobby"
 import TeamTriviaGame from "../components/game/team/TeamTriviaGame"
 import TeamGameResults from "components/game/team/TeamGameResults";
 import Chatbot from '../components/common/Chatbot';
+import NavBar from "../components/common/NavBar";
 
 const AppRoutes = () => {
     return (
         <AuthProvider>
+            <NavBar />
         <Routes>
             <Route path="/" element={<LandingPage/>} />
             <Route path='*' element={<DefaultNotFound />} />
