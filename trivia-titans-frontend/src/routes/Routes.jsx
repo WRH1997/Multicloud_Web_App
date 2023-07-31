@@ -14,7 +14,6 @@ import ConfigureTriviaGames from "../components/admin/ConfigureTriviaGames";
 import {UpdateTriviaGame} from "../components/admin/ConfigureTriviaGameConfigurations/UpdateTriviaGame";
 import BrowseTriviaGames from "../components/admin/BrowseTriviaGames"
 import TeamPage from "../components/team/teamStats";
-import Chat from "../components/common/ChatBox";
 import TriviaGameLobby from "../components/game/TriviaGameLobby";
 import IndividualGame from "../components/game/individual/IndividualGame";
 import TeamGameLobby from "../components/game/team/TeamGameLobby"
@@ -23,10 +22,13 @@ import TeamGameResults from "components/game/team/TeamGameResults";
 import Chatbot from '../components/common/Chatbot';
 import GetUserStatistics from "../components/statistics/userStatistics";
 import UserLeaderboardPage from "components/leaderboard/UserLeaderboard";
+import NavBar from "../components/common/NavBar";
+import IndividualGameResults from "../components/game/individual/IndividualGameResults";
 
 const AppRoutes = () => {
     return (
         <AuthProvider>
+            <NavBar />
         <Routes>
             <Route path="/" element={<LandingPage/>} />
             <Route path='*' element={<DefaultNotFound />} />
@@ -48,6 +50,7 @@ const AppRoutes = () => {
             <Route path='/TeamTriviaGame' element={<TeamTriviaGame />} />
             <Route path='/TeamGameResults' element={<TeamGameResults />} />
             <Route path='/UserLeaderboard' element={<UserLeaderboardPage />} />
+            <Route path='/IndividualGameResults' element={<IndividualGameResults />} />
         </Routes>
         <Chatbot />
         </AuthProvider>

@@ -1,4 +1,4 @@
-import { getAuth, signInWithPopup,signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup,signInWithEmailAndPassword,sendPasswordResetEmail,GoogleAuthProvider, signOut } from "firebase/auth";
 import React, {useState} from "react";
 import {Modal, Paper, Box, Typography, Grid, Container, InputAdornment, IconButton} from '@mui/material';import invokeLambda from "../common/InvokeLambda";
 import {Button, TextField} from "@mui/material";
@@ -9,7 +9,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {useLocation, useNavigate} from "react-router-dom";
 import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
 import {createEmailIdentity} from "../common/AuthContext";
-
+import {ToastContainer,toast} from "react-toastify";
 
 const Login = () => {
     const routeLocation = useLocation();
@@ -33,6 +33,7 @@ const Login = () => {
     const selectedQuestion = Math.floor(Math.random() * 2) + 1;
     const navigate = useNavigate();
 
+
     const handleLogin = async (e) => {
 
         e.preventDefault();
@@ -46,7 +47,6 @@ const Login = () => {
                     } else {
                         await handleMfaLogin(result.user);
                     }
-
                 }
             ).catch((error) => {
             const errorCode = error.code;
@@ -129,6 +129,23 @@ const Login = () => {
             [e.target.name]: e.target.value,
         });
     };
+        const handleResetPassword = () => {
+            const auth = getAuth();
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    // Password reset email sent!
+                    console.log("Password reset email sent to user!");
+                    // You can add toast here to notify user about the email sent
+                })
+                .catch((error) => {
+                    // An error occurred
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    // ..
+                    console.log("Failed to send password reset email: ", errorCode, errorMessage);
+                    // You can add toast here to notify user about the error
+                });
+        };
     const handleChangeMfaModal = (e) => {
         setAnswer(e.target.value);
     };
@@ -154,14 +171,23 @@ const Login = () => {
                 expectedAnswer = userMfaData.secretAnswer3;
                 break;
         }
-        console.log(answer, expectedAnswer, selectedQuestion);
-        console.log(await invokeLambda("lambdaDynamoDBClient", jsonPayload));
         if (answer === expectedAnswer) {
-            console.log("MFA USER LOGIN SUCCESS ");
-            navigate(-1);
+            toast.success("MFA USER LOGIN SUCCESS ");
+            navigate("/");
+            window.location.reload()
         } else {
-            console.log("MFA USER LOGIN FAILED!! wrong answer ");
-            Logout();
+            const auth = getAuth();
+            signOut(auth).then(() => {
+                console.log("USER LOGOUT!!!")
+                toast.error("MFA USER LOGIN FAILED!! wrong answer ");
+                function fun () { window.location.reload() };
+                setTimeout(function () {
+                    fun();
+                }, 2000);
+                // Sign-out successful.
+            }).catch((error) => {
+                // An error happened.
+            });
         }
         setMfaModalIsOpen(false);
     };
@@ -181,8 +207,21 @@ const Login = () => {
                 type: "USER"
             }
         }
+        const currentUser = getAuth().currentUser;
+        const userProfileJsonPayload =
+            {
+                tableName: "User",
+                operation: "CREATE",
+                item: {
+                    Email: currentUser.email,
+                    displayName:currentUser.displayName,
+                    uid: currentUser.uid
+                }
+            };
+        await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);
 
-        const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
+        await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
+
         console.log("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
         //After Completing Registration, perform whatever actions you want here
@@ -191,6 +230,7 @@ const Login = () => {
     };
     return (
         <Container component="main" maxWidth="xs">
+            <ToastContainer/>
             <div>
                 <Typography component="h1" variant="h5">
                     Login
@@ -242,6 +282,14 @@ const Login = () => {
                         color="primary"
                     >
                         Login
+                    </Button>
+                    <Button
+                        onClick={handleResetPassword}
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                    >
+                        Reset Password
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>

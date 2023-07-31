@@ -33,7 +33,11 @@ export const getCurrentUserPermissionLevel = async (userEmail) => {
             userEmail: userEmail
         }
     };
-    return invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload).type.toString();
+    const response = await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
+    if(response)
+        return response.type
+    else
+        return response
 }
 
 
