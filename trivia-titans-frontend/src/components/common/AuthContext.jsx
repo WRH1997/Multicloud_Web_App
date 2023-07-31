@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {getAuth, onAuthStateChanged} from 'firebase/auth';
 import invokeLambdaFunction from "./InvokeLambda";
-
+import {fromCognitoIdentityPool} from "@aws-sdk/credential-provider-cognito-identity";
+import {CognitoIdentityClient} from "@aws-sdk/client-cognito-identity";
+import { SESClient, VerifyEmailIdentityCommand } from "@aws-sdk/client-ses";
 export const AuthContext = React.createContext(null);
 
 export const  AuthProvider = ({ children }) => {
@@ -34,3 +36,20 @@ export const getCurrentUserPermissionLevel = async (userEmail) => {
     return invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload).type.toString();
 }
 
+
+export async function createEmailIdentity(userEmail) {
+    const sesClientCredentials = fromCognitoIdentityPool({
+        identityPoolId: 'us-east-1:79432309-bc2e-447e-86b7-84c5b115e0e0',
+        client: new CognitoIdentityClient({region: "us-east-1"})
+    });
+    const ses = new SESClient({ region: "us-east-1",credentials: sesClientCredentials });
+    const params = {
+        EmailIdentity: userEmail // Replace example@example.com with your email address
+    };
+    try {
+        const data = await ses.send(new VerifyEmailIdentityCommand(params));
+        console.log("Identity Created in SES", data);
+    } catch (err) {
+        console.error(err, err.stack);
+    }
+}
