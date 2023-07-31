@@ -1,4 +1,4 @@
-import { getAuth, signInWithPopup,signInWithEmailAndPassword,sendPasswordResetEmail,GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup,signInWithEmailAndPassword,sendPasswordResetEmail,GoogleAuthProvider, signOut } from "firebase/auth";
 import React, {useState} from "react";
 import {Modal, Paper, Box, Typography, Grid, Container, InputAdornment, IconButton} from '@mui/material';import invokeLambda from "../common/InvokeLambda";
 import {Button, TextField} from "@mui/material";
@@ -47,7 +47,6 @@ const Login = () => {
                     } else {
                         await handleMfaLogin(result.user);
                     }
-
                 }
             ).catch((error) => {
             const errorCode = error.code;
@@ -174,10 +173,21 @@ const Login = () => {
         }
         if (answer === expectedAnswer) {
             toast.success("MFA USER LOGIN SUCCESS ");
-            navigate(-1);
+            navigate("/");
+            window.location.reload()
         } else {
-            toast.error("MFA USER LOGIN FAILED!! wrong answer ");
-            Logout();
+            const auth = getAuth();
+            signOut(auth).then(() => {
+                console.log("USER LOGOUT!!!")
+                toast.error("MFA USER LOGIN FAILED!! wrong answer ");
+                function fun () { window.location.reload() };
+                setTimeout(function () {
+                    fun();
+                }, 2000);
+                // Sign-out successful.
+            }).catch((error) => {
+                // An error happened.
+            });
         }
         setMfaModalIsOpen(false);
     };
