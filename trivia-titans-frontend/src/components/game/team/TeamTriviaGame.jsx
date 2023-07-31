@@ -123,16 +123,13 @@ export default function TeamTriviaGame() {
                                 Team Members:
                                 {teamMembers.map((team, index) => (
                                     <div key={index}>
-                                        <p>Player {index+1}: {team.playerEmail.S}</p>
+                                        <p>Player {index + 1}: {team.playerEmail.S}</p>
                                     </div>
                                 ))}
                             </Typography>
                         )}
                     </Grid>
 
-                    <Grid item sx={{ margin: 2 }}>
-                        <Chat />
-                    </Grid>
                 </Grid>
 
                 <Grid item xs={10} md={4}>
@@ -183,6 +180,12 @@ export default function TeamTriviaGame() {
                     </Grid>
                 </Grid>
 
+                <Grid item xs={1} md={4}>
+                    <Grid item sx={{ margin: 2 }}>
+                        <Chat />
+                    </Grid>
+                </Grid>
+                
             </Grid>
         </ThemeProvider >
     );
