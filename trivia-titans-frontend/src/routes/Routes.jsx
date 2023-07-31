@@ -21,6 +21,7 @@ import TeamTriviaGame from "../components/game/team/TeamTriviaGame"
 import TeamGameResults from "components/game/team/TeamGameResults";
 import Chatbot from '../components/common/Chatbot';
 import NavBar from "../components/common/NavBar";
+import IndividualGameResults from "../components/game/individual/IndividualGameResults";
 
 const AppRoutes = () => {
     return (
@@ -45,6 +46,7 @@ const AppRoutes = () => {
             <Route path='/TeamGameLobby' element={<TeamGameLobby />} />
             <Route path='/TeamTriviaGame' element={<TeamTriviaGame />} />
             <Route path='/TeamGameResults' element={<TeamGameResults />} />
+            <Route path='/IndividualGameResults' element={<IndividualGameResults />} />
         </Routes>
         <Chatbot />
         </AuthProvider>
