@@ -21,6 +21,8 @@ import TeamGameLobby from "../components/game/team/TeamGameLobby"
 import TeamTriviaGame from "../components/game/team/TeamTriviaGame"
 import TeamGameResults from "components/game/team/TeamGameResults";
 import Chatbot from '../components/common/Chatbot';
+import GetUserStatistics from "../components/statistics/userStatistics";
+import UserLeaderboardPage from "components/leaderboard/UserLeaderboard";
 
 const AppRoutes = () => {
     return (
@@ -30,6 +32,7 @@ const AppRoutes = () => {
             <Route path='*' element={<DefaultNotFound />} />
             <Route path='CreateTriviaGame' element={<CreateTriviaGame />} />
             <Route path='EditProfile' element={<EditProfile/>} />
+            <Route path='/GetUserStatistics' element={<GetUserStatistics />} />
             <Route path='SignUp' element={<HandleSignUp/>} />
             <Route path='Login' element={<Login/>} />
             <Route path='Logout' element={<Logout/>} />
@@ -44,6 +47,7 @@ const AppRoutes = () => {
             <Route path='/TeamGameLobby' element={<TeamGameLobby />} />
             <Route path='/TeamTriviaGame' element={<TeamTriviaGame />} />
             <Route path='/TeamGameResults' element={<TeamGameResults />} />
+            <Route path='/UserLeaderboard' element={<UserLeaderboardPage />} />
         </Routes>
         <Chatbot />
         </AuthProvider>

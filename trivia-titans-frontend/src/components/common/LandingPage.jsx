@@ -91,10 +91,22 @@ export default function LandingPage() {
             Edit Profile
           </Button>
           <Button
+            variant="contained"
+            onClick={() => navigate("/GetUserStatistics")}
+          >
+            Get user statistics
+          </Button>
+          <Button
               variant="contained"
               onClick={() => navigate("/Leaderboard")}
           >
             Leaderboard
+          </Button>
+          <Button
+              variant="contained"
+              onClick={() => navigate("/UserLeaderboard")}
+          >
+            User Leaderboard
           </Button>
         </Grid>
       </Grid>
