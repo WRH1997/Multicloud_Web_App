@@ -1,13 +1,23 @@
-import { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { useNavigate } from "react-router";
 import { useLocation } from 'react-router-dom';
 import invokeLambdaFunction from "../../common/InvokeLambda";
 import { appTheme } from '../../../themes/theme';
+import {AuthContext} from "../../common/AuthContext";
 import { Button, CssBaseline, FormControlLabel, Grid, Radio, ThemeProvider, Typography } from "@mui/material";
 import Countdown from 'react-countdown';
 
 
 export default function IndividualGame(){
+
+    const currentUser = useContext(AuthContext);
+
+    const AWS = require("aws-sdk");
+    AWS.config.region = 'us-east-1';
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-east-1:79432309-bc2e-447e-86b7-84c5b115e0e0',
+    });
+    const dynamoClient = new AWS.DynamoDB.DocumentClient({});
 
     const { state } = useLocation();
     const triviaGame = state.triviaGame;
@@ -79,8 +89,29 @@ export default function IndividualGame(){
         };
 
 
+    const updateScoreTable = async (grade) => {
+        let updateExpr = "";
+        if(grade>=70){
+            updateExpr = "set games_played = games_played + :inc, total_points_earned = total_points_earned + :grade, win = win + :inc";
+        }
+        else{
+            updateExpr = "set games_played = games_played + :inc, total_points_earned = total_points_earned + :grade";
+        }
+        const params = {
+            TableName: "User",
+            Key: {
+                "uid": currentUser.uid
+            },
+            UpdateExpression: updateExpr,
+            ExpressionAttributeValues: {
+                ":inc": 1,
+                ":grade": grade
+            }
+        };
+        await dynamoClient.update(params).promise();
+    }
 
-    //Endpoints/params integrated in place of below temp code
+
     const submitQuiz = () => {
         /*let res = [];
         let correctQ = 0;
@@ -122,6 +153,8 @@ export default function IndividualGame(){
         const totalQs = results.length;
         const correctQ = results.filter((result) => result.status === "Correct").length;
         const grade = (correctQ / totalQs) * 100;
+
+        updateScoreTable(grade);
 
         nav("/IndividualGameResults", {
             state: {
