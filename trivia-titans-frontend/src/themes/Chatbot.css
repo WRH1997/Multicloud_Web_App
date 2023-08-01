@@ -4,6 +4,15 @@
     width: 100%;
     padding: 5px;
   }
+
+  .popbtn{
+    font-size: 14pt;
+    border: solid black 1px;
+    border-radius: 25px;
+    padding: 1vh;
+    padding-right: 3vh;
+    padding-left: 3vh;
+  }
   
   .popup-arrow {
     color: rgb(255, 255, 255);
