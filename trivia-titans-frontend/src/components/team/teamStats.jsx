@@ -9,6 +9,7 @@ import {AuthContext} from "../common/AuthContext";
 import {useNavigate} from "react-router";
 import {fetchAllTeamMembersData, fetchCurrentTeamStatistics, fetchMemberTeamData} from "../common/teamContext";
 import Chat from "../common/ChatBox";
+import axios from "axios";
 
 const TeamPage = () => {
     const currentUser = useContext(AuthContext);
@@ -70,6 +71,24 @@ const TeamPage = () => {
     const handleCreateTeamDialogClose = () => {
         setCreateTeamOpen(false);
     };
+
+    const generateTeamName = async () => {
+        try {
+            const response = await axios.get(process.env.REACT_APP_GENERATE_TEAM_NAME_CLOUD_FUNCTION_URL);
+
+            if (response.status !== 200) {
+                throw new Error('Error calling Cloud Function to generate OpenAI Team Name');
+            }
+
+            console.log('Cloud Function AI Generated Team Name response:', response.data);
+            const aiTeamName = response.data?.teamName || 'Blehhh Team Name';
+            setTeamName(aiTeamName)
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    };
+
     const createNewTeam = async () => {
         toast.success(`creating new team with name ${teamName}`);
         const jsonPayload = {
@@ -231,6 +250,9 @@ const TeamPage = () => {
                 <DialogActions>
                 <Button onClick={handleCreateTeamDialogClose} color="primary">
                 Cancel
+                </Button>
+                <Button onClick={generateTeamName} color="primary">
+                AI Generated Team Name
                 </Button>
                 <Button onClick={createNewTeam} color="primary">
                 Create new Team
