@@ -97,8 +97,9 @@ const TeamPage = () => {
             item: {
                 teamName: teamName,
                 totalGames: 0,
-                winLossRatio: -1,
-                totalScore: 0
+                winLossRatio: 1,
+                totalScore: 0,
+                totalWins:0
             }
         };
         await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
@@ -119,7 +120,7 @@ const TeamPage = () => {
     const sendEmailInvite = () => {
         // Add your code here to handle the invite
         toast.success(`Invitation sent to: ${email}`);
-        notifyJoinTeam(email, 'TestTeam');
+        notifyJoinTeam(email, teamName);
         setEmail("");
         setOpen(false);
     };
@@ -265,6 +266,7 @@ const TeamPage = () => {
                 <p><strong>Score:</strong> {teamStatistics.totalScore}</p>
                 <p><strong>Win/Loss Ratio:</strong> {teamStatistics.winLossRatio}</p>
                 <p><strong>Total Games:</strong> {teamStatistics.totalGames}</p>
+                    <p><strong>Total Wins:</strong> {teamStatistics.totalWins}</p>
                 <h3>Team Members are displayed below:</h3>
             {teamMembers.map((team, index) => (
                 <div key={index}>
