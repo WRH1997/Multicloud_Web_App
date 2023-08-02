@@ -131,32 +131,38 @@ const TeamPage = () => {
     };
     const promoteTeamMember = async function (playerEmail)
     {
-        const currentUserUpdatePayload =
-            {
-                "tableName": "teamMembers",
-                "operation": "UPDATE",
-                "key": {
-                    "playerEmail":currentUser.email ,
-                },
-                "updateExpression": "set teamPermission = :teamPermission",
-                "expressionAttributeValues": {
-                    ":teamPermission": "MEMBER",
-                   }
-            }
-        await invokeLambdaFunction('Update_DynamoDBClient', currentUserUpdatePayload);
-        const targetUserUpdatePayload =
-            {
-                "tableName": "teamMembers",
-                "operation": "UPDATE",
-                "key": {
-                    "playerEmail":playerEmail ,
-                },
-                "updateExpression": "set teamPermission = :teamPermission",
-                "expressionAttributeValues": {
-                    ":teamPermission": "ADMIN",
+        if(await fetchCurrentMemberPermissions(currentUser) === 'ADMIN') {
+            const currentUserUpdatePayload =
+                {
+                    "tableName": "teamMembers",
+                    "operation": "UPDATE",
+                    "key": {
+                        "playerEmail": currentUser.email,
+                    },
+                    "updateExpression": "set teamPermission = :teamPermission",
+                    "expressionAttributeValues": {
+                        ":teamPermission": "MEMBER",
+                    }
                 }
-            }
-        await invokeLambdaFunction('Update_DynamoDBClient', targetUserUpdatePayload);
+            await invokeLambdaFunction('Update_DynamoDBClient', currentUserUpdatePayload);
+            const targetUserUpdatePayload =
+                {
+                    "tableName": "teamMembers",
+                    "operation": "UPDATE",
+                    "key": {
+                        "playerEmail": playerEmail,
+                    },
+                    "updateExpression": "set teamPermission = :teamPermission",
+                    "expressionAttributeValues": {
+                        ":teamPermission": "ADMIN",
+                    }
+                }
+            await invokeLambdaFunction('Update_DynamoDBClient', targetUserUpdatePayload);
+        }
+        else
+        {
+            toast.error("Only team ADMIN can promote other members to ADMIN");
+        }
     }
     const removeTeamMember = async function (playerEmail) {
 
