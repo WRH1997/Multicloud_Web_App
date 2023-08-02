@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import invokeLambdaFunction from "../../common/InvokeLambda";
 import { appTheme } from '../../../themes/theme';
 import {AuthContext} from "../../common/AuthContext";
-import { Button, CssBaseline, FormControlLabel, Grid, Radio, ThemeProvider, Typography } from "@mui/material";
+import { Button, CssBaseline, FormControlLabel, Grid, Radio, RadioGroup, ThemeProvider, Typography } from "@mui/material";
 import Countdown from 'react-countdown';
 
 
@@ -27,6 +27,7 @@ export default function IndividualGame(){
     const [questions, setQuestions] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [quizTime, setquizTime] = useState(1);
+    const [selectedOptions, setSelectedOptions] = useState({});
 
     useEffect(()=>{
         getGame(gameId);
@@ -89,6 +90,13 @@ export default function IndividualGame(){
         };
 
 
+        const handleOptionChange = (questionIndex, value) => {
+            setSelectedOptions((prevState) => ({
+                ...prevState,
+                [questionIndex]: value,
+            }));
+        };
+
     const updateScoreTable = async (grade) => {
         let updateExpr = "";
         if(grade>=70){
@@ -139,13 +147,14 @@ export default function IndividualGame(){
         let finalizedRes = {"totalQ":totalQs, "correctQ": correctQ, "Grade": ((correctQ/totalQs)*100), "Results": res};
         alert(JSON.stringify(finalizedRes));*/
         const results = questions.map((question, index) => {
-            const selectedOption = document.querySelector(
-                `input[name='${index}']:checked`
-            );
+            const selectedValue = selectedOptions[index];
+            const selectedOption = question.options[selectedValue];
+            const isCorrect = (selectedOption?.verdict || "Not answered") === "Correct";
+
             const qOutcome = {
                 correctAnswer: question.options.find((option) => option.verdict === "Correct")?.text,
-                yourAnswer: question.options[selectedOption?.name].text,
-                status: selectedOption?.value === "Correct" ? "Correct" : "Wrong",
+                yourAnswer: selectedOption?.text || "Not answered",
+                status: isCorrect ? "Correct" : "Wrong",
             };
             return qOutcome;
         });
@@ -182,23 +191,24 @@ export default function IndividualGame(){
                             <Countdown date={Date.now() + (quizTime * 60 * 1000)}
                                 onComplete={() => submitQuiz()} />
                         </Grid>
-
+                        
                         <Grid item sx={{ margin: 2 }}>
                             {Object.keys(questions).map((key, i) => (
-                                <div key={key}>
+                                <div key={questions[key].id}>
                                     <Typography variant="h6">Question: {questions[key]["text"]}</Typography>
                                     <br />
-                                    {questions[key]["options"].map((option, index) => (
-                                        <div key={index}>
-                                            <FormControlLabel
-                                                control={<Radio />}
-                                                label={option["text"]}
-                                                value={option["verdict"]}
-                                                name={key}
-                                                className={option["text"]}
-                                            />
-                                        </div>
-                                    ))}
+                                    <RadioGroup name={key} value={selectedOptions[key] || ""} onChange={(e) => handleOptionChange(key, e.target.value)}>
+                                        {questions[key]["options"].map((option, index) => (
+                                            <div key={option.id}>
+                                                <FormControlLabel
+                                                    control={<Radio />}
+                                                    label={option["text"]}
+                                                    value={index}
+                                                    className={option["text"]}
+                                                />
+                                            </div>
+                                        ))}
+                                    </RadioGroup>
                                     <br />
                                     <hr />
                                 </div>
