@@ -60,8 +60,10 @@ const
                             item: {
                                 Email: user.email,
                                 displayName:user.displayName,
-                                uid: user.uid
-
+                                uid: user.uid,
+                                games_played:0,
+                                total_points_earned:0,
+                                win:0
                             }
                         };
                     await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);
