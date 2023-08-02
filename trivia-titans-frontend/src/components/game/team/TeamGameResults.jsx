@@ -1,6 +1,7 @@
 import { Box, Button, CssBaseline, Grid, Paper, ThemeProvider, Typography, } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 import { appTheme } from "../../../themes/theme";
+import Chat from "components/common/ChatBox";
 
 const TeamGameResults = () => {
 
@@ -83,6 +84,11 @@ const TeamGameResults = () => {
                     >
                         Back to Home
                     </Button>
+                </Grid>
+                <Grid item xs={1} md={4}>
+                    <Grid item sx={{ margin: 2 }}>
+                        <Chat />
+                    </Grid>
                 </Grid>
             </Grid>
         </ThemeProvider>
