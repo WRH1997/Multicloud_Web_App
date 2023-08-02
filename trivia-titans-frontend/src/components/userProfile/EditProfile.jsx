@@ -3,7 +3,7 @@ import '../../themes/EditProfile.css';
 import {AuthContext} from "../common/AuthContext";
 import {getAuth} from "firebase/auth";
 import {createUserWithEmailAndPassword,updateProfile, updateCurrentUser, updateEmail, updatePassword, updatePhoneNumber} from "firebase/auth";
-import firebaseClient from '../common/firebase';
+import {firebaseClient} from '../common/firebase';
 import {useNavigate} from 'react-router-dom';
 
 
