@@ -7,7 +7,12 @@ import notifyJoinTeam from "./NotifyJoinTeam";
 import invokeLambdaFunction from "../common/InvokeLambda";
 import {AuthContext} from "../common/AuthContext";
 import {useNavigate} from "react-router";
-import {fetchAllTeamMembersData, fetchCurrentTeamStatistics, fetchMemberTeamData} from "../common/teamContext";
+import {
+    fetchAllTeamMembersData,
+    fetchCurrentMemberPermissions,
+    fetchCurrentTeamStatistics,
+    fetchMemberTeamData
+} from "../common/teamContext";
 import Chat from "../common/ChatBox";
 import axios from "axios";
 
@@ -126,67 +131,79 @@ const TeamPage = () => {
     };
     const promoteTeamMember = async function (playerEmail)
     {
-        const currentUserUpdatePayload =
-            {
-                "tableName": "teamMembers",
-                "operation": "UPDATE",
-                "key": {
-                    "playerEmail":currentUser.email ,
-                },
-                "updateExpression": "set teamPermission = :teamPermission",
-                "expressionAttributeValues": {
-                    ":teamPermission": "MEMBER",
-                   }
-            }
-        await invokeLambdaFunction('Update_DynamoDBClient', currentUserUpdatePayload);
-        const targetUserUpdatePayload =
-            {
-                "tableName": "teamMembers",
-                "operation": "UPDATE",
-                "key": {
-                    "playerEmail":playerEmail ,
-                },
-                "updateExpression": "set teamPermission = :teamPermission",
-                "expressionAttributeValues": {
-                    ":teamPermission": "ADMIN",
+        if(await fetchCurrentMemberPermissions(currentUser) === 'ADMIN') {
+            const currentUserUpdatePayload =
+                {
+                    "tableName": "teamMembers",
+                    "operation": "UPDATE",
+                    "key": {
+                        "playerEmail": currentUser.email,
+                    },
+                    "updateExpression": "set teamPermission = :teamPermission",
+                    "expressionAttributeValues": {
+                        ":teamPermission": "MEMBER",
+                    }
                 }
-            }
-        await invokeLambdaFunction('Update_DynamoDBClient', targetUserUpdatePayload);
+            await invokeLambdaFunction('Update_DynamoDBClient', currentUserUpdatePayload);
+            const targetUserUpdatePayload =
+                {
+                    "tableName": "teamMembers",
+                    "operation": "UPDATE",
+                    "key": {
+                        "playerEmail": playerEmail,
+                    },
+                    "updateExpression": "set teamPermission = :teamPermission",
+                    "expressionAttributeValues": {
+                        ":teamPermission": "ADMIN",
+                    }
+                }
+            await invokeLambdaFunction('Update_DynamoDBClient', targetUserUpdatePayload);
+        }
+        else
+        {
+            toast.error("Only team ADMIN can promote other members to ADMIN");
+        }
     }
     const removeTeamMember = async function (playerEmail) {
 
         const teamPlayerData = await fetchMemberTeamData(playerEmail);
-        if (!teamPlayerData)
-            setIsTeamPlayer(false);
-        else {
+        if (await fetchCurrentMemberPermissions(currentUser) === 'ADMIN' || currentUser.email===playerEmail) {
+            if (!teamPlayerData)
+                setIsTeamPlayer(false);
+            else {
 
-            // if admin removes themselves from the team, the whole team is disbanded.
-            if (teamPlayerData.teamPermission === 'ADMIN') {
-                toast.success("player remove requested " +teamPlayerData.playerEmail);
-                for (let item of teamMembers) {
-                    const deleteUser = {
+                // if admin removes themselves from the team, the whole team is disbanded.
+                if (teamPlayerData.teamPermission === 'ADMIN') {
+                    toast.success("player remove requested " + teamPlayerData.playerEmail);
+                    for (let item of teamMembers) {
+                        const deleteUser = {
+                            tableName: "teamMembers",
+                            operation: "DELETE",
+                            key: {
+                                playerEmail: item.playerEmail.S
+                            }
+                        };
+                        await invokeLambdaFunction('Delete_DynamoDBClient', deleteUser);
+                        toast.success("deleted player " + item.playerEmail.S + " from team" + item.teamName.S);
+                        setTeamMembers(teamMembers.filter((team) => team.playerEmail !== item.playerEmail.S));
+                        setIsTeamPlayer(false);
+                    }
+                } else if (teamPlayerData.teamPermission.S === 'MEMBER') {
+                    const jsonPayload2 = {
                         tableName: "teamMembers",
                         operation: "DELETE",
                         key: {
-                            playerEmail: item.playerEmail.S
+                            playerEmail: playerEmail
                         }
                     };
-                    await invokeLambdaFunction('Delete_DynamoDBClient', deleteUser);
-                    toast.success("deleted player "+ item.playerEmail.S +" from team" +item.teamName.S);
-                    setTeamMembers(teamMembers.filter((team) => team.playerEmail !== item.playerEmail.S));
-                    setIsTeamPlayer(false);
+                    await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
+                    setTeamMembers(teamMembers.filter((team) => team.playerEmail !== playerEmail));
                 }
-            } else if (teamPlayerData.teamPermission.S === 'MEMBER') {
-                const jsonPayload2 = {
-                    tableName: "teamMembers",
-                    operation: "DELETE",
-                    key: {
-                        playerEmail: playerEmail
-                    }
-                };
-                await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
-                setTeamMembers(teamMembers.filter((team) => team.playerEmail !== playerEmail));
             }
+        }
+        else
+        {
+            toast.error("You don't have enough permissions to perform that operation");
         }
     }
     return (

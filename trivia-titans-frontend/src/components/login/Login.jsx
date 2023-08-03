@@ -173,8 +173,7 @@ const Login = () => {
         }
         if (answer === expectedAnswer) {
             toast.success("MFA USER LOGIN SUCCESS ");
-            navigate("/");
-            window.location.reload()
+            navigate(-1);
         } else {
             const auth = getAuth();
             signOut(auth).then(() => {
