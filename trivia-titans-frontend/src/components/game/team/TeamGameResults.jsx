@@ -2,6 +2,8 @@ import { Box, Button, CssBaseline, Grid, Paper, ThemeProvider, Typography, } fro
 import { Link, useLocation } from "react-router-dom";
 import { appTheme } from "../../../themes/theme";
 import Chat from "components/common/ChatBox";
+import { useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 const TeamGameResults = () => {
 
@@ -10,6 +12,14 @@ const TeamGameResults = () => {
     const correctQ = state.correctQ;
     const grade = state.grade;
     const answers = state.answers;
+
+    // Use useEffect to reload the page once and destroy previous call stack and game session on result component mount
+    useEffect(() => {
+        toast.success("Game Results Submitted! Well done (Maybe?) ");
+        setTimeout(function () {
+            toast.success("Going Back to Lobby... ");
+        }, 60000);
+    }, []);
 
     return (
         <ThemeProvider theme={appTheme}>
@@ -22,6 +32,8 @@ const TeamGameResults = () => {
                 spacing={2}
                 sx={{ margin: 5 }}
             >
+
+                <ToastContainer />
                 <Grid item>
                     <Typography variant="h4" align="center" gutterBottom>
                         Team Game Results
