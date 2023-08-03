@@ -81,7 +81,13 @@ Play now!`;
     const params = {
         TopicArn: topicArn,
         Message: message,
-        Subject: "Trivia Titans SPD10 - New Game Available to Play!"
+        Subject: "Trivia Titans SPD10 - New Game Available to Play!",
+        MessageAttributes: {
+            Targets: {
+                DataType: 'String',
+                StringValue: 'GameUpdates',
+            }
+        },
     };
 
     try {

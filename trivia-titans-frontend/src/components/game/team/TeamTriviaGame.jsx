@@ -129,6 +129,9 @@ export default function TeamTriviaGame() {
                 }
             });
 
+            // TODO: Save Scores and Results to Relevant tables 
+
+            // Show Results to users
             navigate("/TeamGameResults", {
                 state: {
                     totalQs: totalQs,
@@ -238,6 +241,7 @@ export default function TeamTriviaGame() {
                                             </div>
                                         ))}
                                     </RadioGroup>
+                                    {/* TODO: Request Hint For Question {key} */} 
                                     <br />
                                     <hr />
                                 </div>

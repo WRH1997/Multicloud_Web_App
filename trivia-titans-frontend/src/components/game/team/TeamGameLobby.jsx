@@ -1,13 +1,14 @@
 import { Button, Grid, Typography } from "@mui/material";
 import { AuthContext } from "components/common/AuthContext";
 import { fetchMemberTeamData, fetchAllTeamMembersData } from "components/common/teamContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import { addDoc, collection, doc, getFirestore, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { firebaseClientRishi } from "components/common/firebase";
 import Chat from "components/common/ChatBox";
+import { notifyTeamToJoinGame } from "components/admin/GameUpdateNotifications";
 
 const db = getFirestore(firebaseClientRishi);
 
@@ -46,7 +47,7 @@ const TeamGameLobby = () => {
     useEffect(() => {
         // This useEffect will run whenever teamMembers state changes
         // It will ensure that the teamMembers data is updated and visible in the UI
-    }, [teamMembers, teamSessionDetails]);
+    }, [teamMembers]);
 
     useEffect(() => {
         // This useEffect will run whenever teamSessionDetails state changes
@@ -75,6 +76,8 @@ const TeamGameLobby = () => {
             }, 3000);
         }
     }, [allTeamMembersJoined]);
+
+    const hasDisplayedExitingToastRef = useRef(false);
 
     const getTeamPlayerData = async () => {
         if (currentUser) {
@@ -115,6 +118,16 @@ const TeamGameLobby = () => {
             if (records.length === 0) {
                 // If records do not exist, create documents for all team members
                 createTeamMembersDocuments(sessionId);
+
+                // Send SNS Email notification to all team members except the current logged in user to Join the game
+                const teamEmails = [];
+                for (const teamMember of teamMembers) {
+                    if (teamMember.playerEmail.S != currentUserEmail) {
+                        teamEmails.push(teamMember.playerEmail.S);
+                        notifyTeamToJoinGame(teamEmails, teamName, gameId, gameName);
+                    }
+                }
+
             } else {
                 // If records already exist, check if the current user's status is "WAITING" and update it to "JOINED"
                 currentUserRecord = records.find((record) => record.UserEmail === currentUserEmail);
@@ -123,13 +136,15 @@ const TeamGameLobby = () => {
                     updateCurrentUserStatus(currentUserRecord.id, "JOINED");
                 }
 
-                if (currentUserRecord && currentUserRecord.SessionStatus === "SUBMITTED") {
-                    toast.warning("Your Team has already attempted this game! Exiting..");
+                if (currentUserRecord && currentUserRecord.SessionStatus === "SUBMITTED" && !hasDisplayedExitingToastRef.current) {
+                    toast.warning("Your Team has already attempted this game! Exiting in 15 seconds..");
                     setTimeout(function () {
                         navigate("/TriviaGameLobby")
-                    }, 3000);
-                }
+                    }, 15000);
 
+                    // Set the ref to true to indicate that the toast has been displayed
+                    hasDisplayedExitingToastRef.current = true;
+                }
                 setTeamSessionDetails(records)
             }
         });
@@ -218,15 +233,17 @@ const TeamGameLobby = () => {
                 {isTeamPlayer && teamMembers && currentUserPermission === 'ADMIN' && (
                     <>
                         <br></br>If you don't want to wait, Click Start Game<br></br><br></br>
-                        <Button variant="contained" color="primary" onClick={() => navigate("/TeamTriviaGame", {
-                            state: {
-                                triviaGame: triviaGame,
-                                teamName: teamName,
-                                teamMembers: teamMembers
-                            }
-                        })}>
-                            Start Game
-                        </Button>
+                        {teamSessionDetails.every(teamMember => teamMember.SessionStatus !== 'SUBMITTED') && (
+                            <Button variant="contained" color="primary" onClick={() => navigate("/TeamTriviaGame", {
+                                state: {
+                                    triviaGame: triviaGame,
+                                    teamName: teamName,
+                                    teamMembers: teamMembers
+                                }
+                            })}>
+                                Start Game
+                            </Button>
+                        )}
                     </>
                 )}
 
@@ -235,12 +252,12 @@ const TeamGameLobby = () => {
                     Go To Lobby
                 </Button>
 
-                <Grid item xs={1} md={4}>
+                <Grid item xs={12} md={12} style={{ textAlign: "center" }}>
                     <Grid item sx={{ margin: 2 }}>
                         <Chat />
                     </Grid>
                 </Grid>
-                
+
             </Grid>
         </Grid>
     );

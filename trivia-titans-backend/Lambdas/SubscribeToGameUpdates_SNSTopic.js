@@ -6,10 +6,22 @@ export const handler = async (event) => {
     console.log(event);
     const userEmail = event.userEmail;
 
+    const filterPolicy = {
+        "Targets": [
+            event.userEmail,
+            "GameUpdates"
+        ]
+    };
+
+
     const params = {
-        Protocol: 'EMAIL',
+        Protocol: 'email',
         TopicArn: 'arn:aws:sns:us-east-1:940444391781:GameUpdates',
         Endpoint: event.userEmail,
+        Message: 'Please confirm if you want to receive notifications for GameUpdates',
+        Attributes: {
+            "FilterPolicy": JSON.stringify(filterPolicy)
+        }
     };
 
     try {
