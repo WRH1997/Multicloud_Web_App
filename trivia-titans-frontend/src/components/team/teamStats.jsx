@@ -50,9 +50,7 @@ const TeamPage = () => {
         const getTeamMemberList = async () => {
             if (isTeamPlayer) {
                 const teamMemberData = await fetchAllTeamMembersData(teamName);
-                setTeamMembers(teamMemberData);
-                console.log(teamMemberData);
-            }
+                setTeamMembers(teamMemberData);}
         }
         getTeamMemberList();
     }, [teamName,currentUser]);
