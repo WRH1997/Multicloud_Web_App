@@ -38,6 +38,7 @@ const NavBar = () => {
                         <Button component={RouterLink} to="/ManageTeams" color="inherit">Manage Teams</Button>
                         <Button component={RouterLink} to="/TriviaGameLobby" color="inherit">Trivia Game Lobby</Button>
                         <Button component={RouterLink} to="/EditProfile" color="inherit">Edit Profile</Button>
+                        <Button component={RouterLink} to="/GetUserStatistics" color="inherit">Statistics</Button>
                     </>
                 )}
 
@@ -48,12 +49,14 @@ const NavBar = () => {
                         <Button component={RouterLink} to="/CreateTriviaGame" color="inherit">Create Trivia Game</Button>
                         <Button component={RouterLink} to="/UpdateTriviaGame" color="inherit">Update Trivia Game</Button>
                         <Button component={RouterLink} to="/CreateTriviaQuestions" color="inherit">Create Trivia Questions</Button>
+                        <Button component={RouterLink} to="/Report" color="inherit">Reports</Button>
                     </>
                 )}
 
                 {(loggedInUserRole === 'USER' || loggedInUserRole === 'ADMIN') && (
                     <>
-                        <Button component={RouterLink} to="/Leaderboard" color="inherit">Leaderboard</Button>
+                        <Button component={RouterLink} to="/Leaderboard" color="inherit">Teams Leaderboard</Button>
+                        <Button component={RouterLink} to="/UserLeaderboard" color="inherit">Users Leaderboard</Button>
                         <Button component={RouterLink} to="/Logout" color="inherit">Logout</Button>
                     </>
                 )}
