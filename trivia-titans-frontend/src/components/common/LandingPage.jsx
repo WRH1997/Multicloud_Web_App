@@ -108,6 +108,12 @@ export default function LandingPage() {
           >
             User Leaderboard
           </Button>
+          <Button
+              variant="contained"
+              onClick={() => navigate("/Report")}
+          >
+            Reports
+          </Button>
         </Grid>
       </Grid>
     </Grid>

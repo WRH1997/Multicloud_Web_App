@@ -24,6 +24,7 @@ import GetUserStatistics from "../components/statistics/userStatistics";
 import UserLeaderboardPage from "components/leaderboard/UserLeaderboard";
 import NavBar from "../components/common/NavBar";
 import IndividualGameResults from "../components/game/individual/IndividualGameResults";
+import Report from "../components/report/viewReport";
 
 const AppRoutes = () => {
     return (
@@ -51,6 +52,7 @@ const AppRoutes = () => {
             <Route path='/TeamGameResults' element={<TeamGameResults />} />
             <Route path='/UserLeaderboard' element={<UserLeaderboardPage />} />
             <Route path='/IndividualGameResults' element={<IndividualGameResults />} />
+            <Route path='/Report' element={<Report />} />
         </Routes>
         <Chatbot />
         </AuthProvider>
