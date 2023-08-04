@@ -27,6 +27,7 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [userEmail, setUserEmail] = useState(null);
+    const [secretQuestionNumber, setSecretQuestionNumber] = useState(null);
     const [secretQuestion, setSecretQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [mfaModalIsOpen, setMfaModalIsOpen] = useState(false);
@@ -51,7 +52,6 @@ const Login = () => {
             ).catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            // The email of the user's account used.
             const email = error.customData.email;
             const credential = GoogleAuthProvider.credentialFromError(error);
 
@@ -120,6 +120,7 @@ const Login = () => {
                 break;
         }
         setSecretQuestion(expectedQuestion);
+        setSecretQuestionNumber(selectedQuestion);
         setMfaModalIsOpen(true);
     }
 
@@ -134,7 +135,7 @@ const Login = () => {
             sendPasswordResetEmail(auth, email)
                 .then(() => {
                     // Password reset email sent!
-                    console.log("Password reset email sent to user!");
+                    toast.success("Password reset email sent to user!");
                     // You can add toast here to notify user about the email sent
                 })
                 .catch((error) => {
@@ -142,7 +143,7 @@ const Login = () => {
                     var errorCode = error.code;
                     var errorMessage = error.message;
                     // ..
-                    console.log("Failed to send password reset email: ", errorCode, errorMessage);
+                    toast.error(errorMessage);
                     // You can add toast here to notify user about the error
                 });
         };
@@ -160,7 +161,7 @@ const Login = () => {
         };
         const userMfaData = await invokeLambda("lambdaDynamoDBClient", jsonPayload);
         let expectedAnswer = '';
-        switch (selectedQuestion) {
+        switch (secretQuestionNumber) {
             case 1:
                 expectedAnswer = userMfaData.secretAnswer1;
                 break;
@@ -177,7 +178,7 @@ const Login = () => {
         } else {
             const auth = getAuth();
             signOut(auth).then(() => {
-                console.log("USER LOGOUT!!!")
+                toast.success("USER LOGOUT!!!")
                 toast.error("MFA USER LOGIN FAILED!! wrong answer ");
                 function fun () { window.location.reload() };
                 setTimeout(function () {
@@ -219,11 +220,10 @@ const Login = () => {
             };
         await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);
 
-        await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
+        await invokeLambdaFunction("Create_DynamoDBClient", jsonPayload);
 
-        console.log("MFA Registered for user !", userEmail);
+        toast.success("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
-        //After Completing Registration, perform whatever actions you want here
         await subscribeToGameUpdates(userEmail);
         await createEmailIdentity(userEmail);
     };

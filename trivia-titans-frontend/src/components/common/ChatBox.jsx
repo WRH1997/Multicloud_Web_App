@@ -16,12 +16,16 @@ const Chat = () => {
     const currentUser = useContext(AuthContext)
 
     const scrollRef = useRef(null);
-    
+
     useEffect(() => {
-        if (scrollRef.current) {
-          scrollRef.current.lastElementChild.scrollIntoView({ behavior: "smooth" });
+
+        if (scrollRef.current && scrollRef.current.lastElementChild) {
+
+            scrollRef.current.lastElementChild.scrollIntoView({ behavior: "smooth" });
+
         }
-      }, [message, chat]);
+
+    }, [message, chat, scrollRef]);
 
     useEffect(() => {
         const getTeamPlayerData = async () => {
