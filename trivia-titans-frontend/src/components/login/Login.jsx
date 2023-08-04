@@ -27,6 +27,7 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [userEmail, setUserEmail] = useState(null);
+    const [secretQuestionNumber, setSecretQuestionNumber] = useState(null);
     const [secretQuestion, setSecretQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [mfaModalIsOpen, setMfaModalIsOpen] = useState(false);
@@ -51,7 +52,6 @@ const Login = () => {
             ).catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            // The email of the user's account used.
             const email = error.customData.email;
             const credential = GoogleAuthProvider.credentialFromError(error);
 
@@ -120,6 +120,7 @@ const Login = () => {
                 break;
         }
         setSecretQuestion(expectedQuestion);
+        setSecretQuestionNumber(selectedQuestion);
         setMfaModalIsOpen(true);
     }
 
@@ -160,7 +161,7 @@ const Login = () => {
         };
         const userMfaData = await invokeLambda("lambdaDynamoDBClient", jsonPayload);
         let expectedAnswer = '';
-        switch (selectedQuestion) {
+        switch (secretQuestionNumber) {
             case 1:
                 expectedAnswer = userMfaData.secretAnswer1;
                 break;

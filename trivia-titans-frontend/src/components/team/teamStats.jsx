@@ -196,7 +196,7 @@ const TeamPage = () => {
                             playerEmail: playerEmail
                         }
                     };
-                    await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
+                    await invokeLambdaFunction('Delete_DynamoDBClient', jsonPayload2);
                     setTeamMembers(teamMembers.filter((team) => team.playerEmail !== playerEmail));
                 }
             }
