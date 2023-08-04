@@ -61,7 +61,6 @@ class EditProfile extends React.Component{
     
     Submit = async (event) =>{
         event.preventDefault();
-        console.log(this.state.currentUser);
         let currUser = auth.currentUser;
         let currEmail = auth.currentUser.email;
         try{
@@ -71,29 +70,6 @@ class EditProfile extends React.Component{
                 displayName: this.state.currentUser.displayName,
                 photoURL: this.state.currentUser.photoURL
             })
-
-            /*let rdParams = {
-                TableName: 'userLoginInfo',
-                Key: {'userEmail': currEmail}
-            };
-            let data = await dynamoClient.get(rdParams).promise();
-            let item = data.Item;
-            console.log(item);
-            let insertParams = {
-                TableName: "userLoginInfo",
-                Item:{
-                    userEmail: this.state.currentUser.email,
-                    displayName: this.state.currentUser.displayName,
-                    secretAnswer1:  item.secretAnswer1,
-                    secretAnswer2:  item.secretAnswer2,
-                    secretAnswer3:  item.secretAnswer3,
-                    secretQuestion1: item.secretQuestion1,
-                    secretQuestion2: item.secretQuestion2,
-                    secretQuestion3: item.secretQuestion3
-                }
-            }
-            await dynamoClient.put(insertParams).promise();
-            await dynamoClient.delete(rdParams).promise();*/
             alert('Profile Updated Successfully!\nRedirecting to login...');
             let temp = window.location.href;
             let temp2 = temp.toLowerCase().split("/editprofile")[0];
@@ -101,7 +77,7 @@ class EditProfile extends React.Component{
             window.location.href = redirect;
         }
         catch(e){
-            console.log(e);
+            console.log("Error updating profile:", e);
         }
     }
 
