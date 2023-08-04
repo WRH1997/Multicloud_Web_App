@@ -134,7 +134,7 @@ const Login = () => {
             sendPasswordResetEmail(auth, email)
                 .then(() => {
                     // Password reset email sent!
-                    console.log("Password reset email sent to user!");
+                    toast.success("Password reset email sent to user!");
                     // You can add toast here to notify user about the email sent
                 })
                 .catch((error) => {
@@ -142,7 +142,7 @@ const Login = () => {
                     var errorCode = error.code;
                     var errorMessage = error.message;
                     // ..
-                    console.log("Failed to send password reset email: ", errorCode, errorMessage);
+                    toast.error(errorMessage);
                     // You can add toast here to notify user about the error
                 });
         };
@@ -177,7 +177,7 @@ const Login = () => {
         } else {
             const auth = getAuth();
             signOut(auth).then(() => {
-                console.log("USER LOGOUT!!!")
+                toast.success("USER LOGOUT!!!")
                 toast.error("MFA USER LOGIN FAILED!! wrong answer ");
                 function fun () { window.location.reload() };
                 setTimeout(function () {
@@ -219,11 +219,10 @@ const Login = () => {
             };
         await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);
 
-        await invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
+        await invokeLambdaFunction("Create_DynamoDBClient", jsonPayload);
 
-        console.log("MFA Registered for user !", userEmail);
+        toast.success("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
-        //After Completing Registration, perform whatever actions you want here
         await subscribeToGameUpdates(userEmail);
         await createEmailIdentity(userEmail);
     };

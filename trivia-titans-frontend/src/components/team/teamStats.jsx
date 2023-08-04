@@ -118,6 +118,8 @@ const TeamPage = () => {
         };
         await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
         setIsTeamPlayer(true);
+        const currentTeamStats=await fetchCurrentTeamStatistics(teamName);
+        setTeamStatistics(currentTeamStats);
     }
 
     const sendEmailInvite = () => {
