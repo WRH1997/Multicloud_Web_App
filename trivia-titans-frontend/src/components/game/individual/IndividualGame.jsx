@@ -121,31 +121,6 @@ export default function IndividualGame(){
 
 
     const submitQuiz = () => {
-        /*let res = [];
-        let correctQ = 0;
-        let totalQs = questions.length;
-        for(let x=0; x<totalQs; x++){
-            let options = document.getElementsByName(x.toString());
-            let qOutcome = {};
-            for(let y=0; y<options.length; y++){
-                if(options[y].value=="Correct"){
-                    qOutcome["correctAnswer"] = options[y].className;
-                }
-                if(options[y].checked){
-                    qOutcome["yourAnswer"] = options[y].className;
-                    if(options[y].value=="Correct"){
-                        correctQ++;
-                        qOutcome["status"] = "Correct"
-                    }
-                    else{
-                        qOutcome["status"] = "Wrong"
-                    }
-                }
-            }
-            res.push(qOutcome);
-        }
-        let finalizedRes = {"totalQ":totalQs, "correctQ": correctQ, "Grade": ((correctQ/totalQs)*100), "Results": res};
-        alert(JSON.stringify(finalizedRes));*/
         const results = questions.map((question, index) => {
             const selectedValue = selectedOptions[index];
             const selectedOption = question.options[selectedValue];
