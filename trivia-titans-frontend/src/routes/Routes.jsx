@@ -25,6 +25,7 @@ import UserLeaderboardPage from "components/leaderboard/UserLeaderboard";
 import NavBar from "../components/common/NavBar";
 import IndividualGameResults from "../components/game/individual/IndividualGameResults";
 import Report from "../components/report/viewReport";
+import UserPhoto from "../components/common/UserPhoto"
 
 const AppRoutes = () => {
     return (

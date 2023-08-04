@@ -72,7 +72,7 @@ class EditProfile extends React.Component{
                 photoURL: this.state.currentUser.photoURL
             })
 
-            let rdParams = {
+            /*let rdParams = {
                 TableName: 'userLoginInfo',
                 Key: {'userEmail': currEmail}
             };
@@ -93,7 +93,7 @@ class EditProfile extends React.Component{
                 }
             }
             await dynamoClient.put(insertParams).promise();
-            await dynamoClient.delete(rdParams).promise();
+            await dynamoClient.delete(rdParams).promise();*/
             alert('Profile Updated Successfully!\nRedirecting to login...');
             let temp = window.location.href;
             let temp2 = temp.toLowerCase().split("/editprofile")[0];
@@ -116,7 +116,7 @@ class EditProfile extends React.Component{
                         <input type='text' name='displayName' className='displayName' onChange={this.OnChange} placeholder={this.state.currentUser.displayName}></input>
                         <br></br><br></br>
                         <label htmlFor='email' className='form-lbl'>Email: </label>
-                        <input type='text' name='email' className='email' onChange={this.OnChange} placeholder={this.state.currentUser.email}></input>
+                        <input type='text' name='email' className='email' onChange={this.OnChange} placeholder={this.state.currentUser.email} disabled></input>
                         <br></br><br></br>
                         <label htmlFor='password' className='form-lbl'>Password: </label>
                         <input type='password' name='password' className='password' onChange={this.OnChange} placeholder={this.state.currentUser.password}></input>
