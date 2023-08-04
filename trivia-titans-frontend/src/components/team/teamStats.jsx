@@ -167,9 +167,9 @@ const TeamPage = () => {
         }
     }
     const removeTeamMember = async function (playerEmail) {
-
         const teamPlayerData = await fetchMemberTeamData(playerEmail);
-        if (await fetchCurrentMemberPermissions(currentUser) === 'ADMIN' || currentUser.email===playerEmail) {
+        const currentMemberPermissions = await fetchCurrentMemberPermissions(currentUser);
+        if (currentMemberPermissions === 'ADMIN' || currentUser.email===playerEmail) {
             if (!teamPlayerData)
                 setIsTeamPlayer(false);
             else {
@@ -190,7 +190,7 @@ const TeamPage = () => {
                         setTeamMembers(teamMembers.filter((team) => team.playerEmail !== item.playerEmail.S));
                         setIsTeamPlayer(false);
                     }
-                } else if (teamPlayerData.teamPermission.S === 'MEMBER') {
+                } else if (teamPlayerData.teamPermission === 'MEMBER' || currentMemberPermissions === 'ADMIN' ) {
                     const jsonPayload2 = {
                         tableName: "teamMembers",
                         operation: "DELETE",
@@ -198,6 +198,7 @@ const TeamPage = () => {
                             playerEmail: playerEmail
                         }
                     };
+                    toast.success("player remove requested " + playerEmail);
                     await invokeLambdaFunction('Delete_DynamoDBClient', jsonPayload2);
                     setTeamMembers(teamMembers.filter((team) => team.playerEmail !== playerEmail));
                 }
