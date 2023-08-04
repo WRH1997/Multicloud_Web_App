@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppBar, Toolbar, Button } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { AuthContext, getCurrentUserPermissionLevel } from './AuthContext';
+import UserPhoto from './UserPhoto'
 
 
 const NavBar = () => {
@@ -60,6 +61,7 @@ const NavBar = () => {
                         <Button component={RouterLink} to="/Logout" color="inherit">Logout</Button>
                     </>
                 )}
+                <UserPhoto />
             </Toolbar>
         </AppBar>
     );
