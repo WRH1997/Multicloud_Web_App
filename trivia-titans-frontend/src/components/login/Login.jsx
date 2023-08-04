@@ -215,7 +215,10 @@ const Login = () => {
                 item: {
                     Email: currentUser.email,
                     displayName:currentUser.displayName,
-                    uid: currentUser.uid
+                    uid: currentUser.uid,
+                    games_played:0,
+                    total_points_earned:0,
+                    win:0
                 }
             };
         await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);

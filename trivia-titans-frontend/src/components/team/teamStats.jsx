@@ -277,7 +277,7 @@ const TeamPage = () => {
                 </Button>
                 </DialogActions>
                 </Dialog>
-            {isTeamPlayer && teamMembers && (
+            {isTeamPlayer && teamMembers && teamStatistics && (
 
                 <div className="team-stats">
                 <p><strong>Score:</strong> {teamStatistics.totalScore}</p>

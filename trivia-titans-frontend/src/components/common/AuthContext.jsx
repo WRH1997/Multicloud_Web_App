@@ -48,7 +48,7 @@ export async function createEmailIdentity(userEmail) {
     });
     const ses = new SESClient({ region: "us-east-1",credentials: sesClientCredentials });
     const params = {
-        EmailIdentity: userEmail
+        EmailAddress: userEmail
     };
     try {
         const data = await ses.send(new VerifyEmailIdentityCommand(params));
