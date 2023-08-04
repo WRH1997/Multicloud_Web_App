@@ -37,6 +37,8 @@ const GetUserStatistics = () => {
           <div>
             <h2>User Statistics</h2>
             <p>Games Played: {statistics.gamesPlayed}</p>
+            <p>Wins: {statistics.win}</p>
+            <p>Loss: {statistics.loss}</p>
             <p>Win/Loss Ratio: {statistics.winLossRatio}</p>
             <p>Total Points Earned: {statistics.totalPointsEarned}</p>
           </div>
