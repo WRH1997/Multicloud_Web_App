@@ -81,6 +81,12 @@ const TeamGameResults = () => {
                                 >
                                     Result: {answer.status}
                                 </Typography>
+                                {answer && answer.explanation  && (
+                                    <Typography variant="body1" gutterBottom>
+                                        Explanation: {answer.explanation}
+                                    </Typography>
+                                )}
+
                             </Paper>
                         ))}
                     </Box>

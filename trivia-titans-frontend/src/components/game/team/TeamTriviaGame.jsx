@@ -114,6 +114,7 @@ export default function TeamTriviaGame() {
                     correctAnswer: question.options.find((option) => option.verdict === "Correct")?.text,
                     yourAnswer: selectedOption?.text || "Not answered",
                     status: isCorrect ? "Correct" : "Wrong",
+                    explanation: question.options.find((option) => option.verdict === "Correct")?.explanation || "This is correct",
                 };
                 return qOutcome;
             });
@@ -125,11 +126,16 @@ export default function TeamTriviaGame() {
             // Update Firestore data for all documents with matching sessionId
             teamSessionDetails.forEach(async (teamMember) => {
                 if (teamMember.SessionId === sessionId) {
-                    await updateQuizResults(teamMember.id, totalQs, correctQ, grade, results);
+                    await updateQuizResultsInFirebase(teamMember.id, totalQs, correctQ, grade, results);
                 }
             });
 
-            // TODO: Save Scores and Results to Relevant tables 
+            const teamEmails = [];
+            for (const teamMember of teamMembers) {
+                teamEmails.push(teamMember.playerEmail.S);
+            }
+            // Save Scores and Results to DynamoDB tables 
+            await updateQuizResultsInDynamoDB(grade, teamEmails);
 
             // Show Results to users
             navigate("/TeamGameResults", {
@@ -173,7 +179,7 @@ export default function TeamTriviaGame() {
         }
     }
 
-    const updateQuizResults = async (docId, totalQs, correctQ, grade, answers) => {
+    const updateQuizResultsInFirebase = async (docId, totalQs, correctQ, grade, answers) => {
         await updateDoc(doc(db, "TeamGameLobbySessions", docId), {
             totalQs: totalQs,
             correctQ: correctQ,
@@ -182,6 +188,22 @@ export default function TeamTriviaGame() {
             Timestamp: serverTimestamp(),
             SessionStatus: "SUBMITTED", // Assuming sessionStatus field exists in the Firestore document
         });
+    };
+
+    const updateQuizResultsInDynamoDB = async (grade, teamEmails) => {
+        let winIncrement = 0;
+        if (grade >= 70) {
+            winIncrement++;
+        }
+        const jsonPayload = {
+            "gameId": gameId,
+            "teamName": teamName,
+            "grade": grade,
+            "winIncrement": winIncrement,
+            "teamEmails": teamEmails
+        }
+        const data = await invokeLambdaFunction("UpdateTeamQuizResults", jsonPayload);
+        console.log("After Dynamo Results Update: ", data);
     };
 
 
@@ -241,7 +263,7 @@ export default function TeamTriviaGame() {
                                             </div>
                                         ))}
                                     </RadioGroup>
-                                    {/* TODO: Request Hint For Question {key} */} 
+                                    {/* TODO: Request Hint For Question {key} */}
                                     <br />
                                     <hr />
                                 </div>
