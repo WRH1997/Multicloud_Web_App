@@ -120,6 +120,7 @@ const TeamPage = () => {
         setIsTeamPlayer(true);
         const currentTeamStats=await fetchCurrentTeamStatistics(teamName);
         setTeamStatistics(currentTeamStats);
+        window.location.reload();
     }
 
     const sendEmailInvite = () => {
@@ -190,6 +191,14 @@ const TeamPage = () => {
                         setTeamMembers(teamMembers.filter((team) => team.playerEmail !== item.playerEmail.S));
                         setIsTeamPlayer(false);
                     }
+                    const deleteTeamStats = {
+                        tableName: "teamStats",
+                        operation: "DELETE",
+                        key: {
+                            teamName: teamPlayerData.teamName
+                        }
+                    };
+                   await invokeLambdaFunction('Delete_DynamoDBClient', deleteTeamStats);
                 } else if (teamPlayerData.teamPermission === 'MEMBER' || currentMemberPermissions === 'ADMIN' ) {
                     const jsonPayload2 = {
                         tableName: "teamMembers",
