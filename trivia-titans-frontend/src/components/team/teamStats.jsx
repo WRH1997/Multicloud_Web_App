@@ -118,6 +118,8 @@ const TeamPage = () => {
         };
         await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
         setIsTeamPlayer(true);
+        const currentTeamStats=await fetchCurrentTeamStatistics(teamName);
+        setTeamStatistics(currentTeamStats);
     }
 
     const sendEmailInvite = () => {
@@ -194,7 +196,7 @@ const TeamPage = () => {
                             playerEmail: playerEmail
                         }
                     };
-                    await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload2);
+                    await invokeLambdaFunction('Delete_DynamoDBClient', jsonPayload2);
                     setTeamMembers(teamMembers.filter((team) => team.playerEmail !== playerEmail));
                 }
             }
