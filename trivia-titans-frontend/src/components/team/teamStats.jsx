@@ -198,6 +198,7 @@ const TeamPage = () => {
                             playerEmail: playerEmail
                         }
                     };
+                    toast.success("player remove requested " + playerEmail);
                     await invokeLambdaFunction('Delete_DynamoDBClient', jsonPayload2);
                     setTeamMembers(teamMembers.filter((team) => team.playerEmail !== playerEmail));
                 }
