@@ -131,7 +131,8 @@ const TeamPage = () => {
     };
     const promoteTeamMember = async function (playerEmail)
     {
-        if(await fetchCurrentMemberPermissions(currentUser) === 'ADMIN') {
+        const teamPermission = await fetchCurrentMemberPermissions(currentUser);
+        if(teamPermission === 'ADMIN') {
             const currentUserUpdatePayload =
                 {
                     "tableName": "teamMembers",
@@ -157,6 +158,7 @@ const TeamPage = () => {
                         ":teamPermission": "ADMIN",
                     }
                 }
+                toast.success("promoting "+playerEmail+"to team ADMIN");
             await invokeLambdaFunction('Update_DynamoDBClient', targetUserUpdatePayload);
         }
         else
