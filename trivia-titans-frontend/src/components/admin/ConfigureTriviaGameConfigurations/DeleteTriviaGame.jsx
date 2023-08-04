@@ -24,7 +24,11 @@ const DeleteTriviaGame = ({ triviaGameID, triviaGameTimestamp, open, onClose, se
                 'Trivia Game Deleted!',
             );
             setSnackbarOpen(true);
+            setTimeout(function () {
+                window.location.reload();
+            }, 2500);
             onClose();
+            
 
         } catch (error) {
             setSnackbarSeverity('error');

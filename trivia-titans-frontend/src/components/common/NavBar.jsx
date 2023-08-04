@@ -45,9 +45,6 @@ const NavBar = () => {
                 {loggedInUserRole === 'ADMIN' && (
                     <>
                         <Button component={RouterLink} to="/ConfigureTriviaGames" color="inherit">Configure Trivia Games</Button>
-                        <Button component={RouterLink} to="/BrowseTriviaGames" color="inherit">Browse Trivia Games</Button>
-                        <Button component={RouterLink} to="/CreateTriviaGame" color="inherit">Create Trivia Game</Button>
-                        <Button component={RouterLink} to="/UpdateTriviaGame" color="inherit">Update Trivia Game</Button>
                         <Button component={RouterLink} to="/CreateTriviaQuestions" color="inherit">Create Trivia Questions</Button>
                         <Button component={RouterLink} to="/Report" color="inherit">Reports</Button>
                     </>

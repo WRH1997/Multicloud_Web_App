@@ -99,8 +99,15 @@ const TeamGameLobby = () => {
 
     const getTeamMemberList = async (teamName) => {
         const teamMemberData = await fetchAllTeamMembersData(teamName);
-        setTeamMembers(teamMemberData);
-        return teamMemberData;
+        if (teamMemberData.length <= 1) {
+            toast.error("Invite Members to your team first to play as a team!");
+            setTimeout(function () {
+                navigate("/TriviaGameLobby")
+            }, 3000);
+        } else {
+            setTeamMembers(teamMemberData);
+            return teamMemberData;
+        }
     }
 
     //Code to wait for all team members to join the game
@@ -137,10 +144,10 @@ const TeamGameLobby = () => {
                 }
 
                 if (currentUserRecord && currentUserRecord.SessionStatus === "SUBMITTED" && !hasDisplayedExitingToastRef.current) {
-                    toast.warning("Your Team has already attempted this game! Exiting in 15 seconds..");
+                    toast.warning("Your Team has already attempted this game! Exiting in 30 seconds..");
                     setTimeout(function () {
                         navigate("/TriviaGameLobby")
-                    }, 15000);
+                    }, 30000);
 
                     // Set the ref to true to indicate that the toast has been displayed
                     hasDisplayedExitingToastRef.current = true;
