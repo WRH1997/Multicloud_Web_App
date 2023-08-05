@@ -12,9 +12,7 @@ import {createEmailIdentity} from "../common/AuthContext";
 import {ToastContainer,toast} from "react-toastify";
 
 const Login = () => {
-    const routeLocation = useLocation();
-    const { from } = routeLocation.pathname|| { from: { pathname: '/' } };
-
+// constants.
     const [formData, setFormData] = useState({
         question1: '',
         answer1: '',
@@ -39,6 +37,7 @@ const Login = () => {
 
         e.preventDefault();
         const auth = getAuth();
+        // regular sign-in with email and password.
         signInWithEmailAndPassword(auth, email, password)
             .then(async (result) => {
                     const isMFAUser = await checkMfaUser(result.user);
@@ -50,11 +49,9 @@ const Login = () => {
                     }
                 }
             ).catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
             const email = error.customData.email;
-            const credential = GoogleAuthProvider.credentialFromError(error);
-
+            // Google Auth provider via OAuth
+            GoogleAuthProvider.credentialFromError(error);
         });
 
     }
@@ -66,7 +63,7 @@ const Login = () => {
     gmailUserLogin() {
         const provider = new GoogleAuthProvider();
         const auth = getAuth();
-
+        // Sign in with GMAIL Popup
         signInWithPopup(auth, provider)
             .then(async (result) => {
                 const isMFAUser = await checkMfaUser(result.user);
@@ -77,16 +74,14 @@ const Login = () => {
                     await handleMfaLogin(result.user);
                 }
             }).catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
+// The email of the user's account used.
             const email = error.customData.email;
-            const credential = GoogleAuthProvider.credentialFromError(error);
-
+            GoogleAuthProvider.credentialFromError(error);
         });
     }
 
     async function checkMfaUser(user) {
+        // Check if user has MFA entries in the table, if not , make them enter new entries to the table.
         const jsonPayload = {
             tableName: "userLoginInfo",
             operation: "READ",
@@ -99,6 +94,7 @@ const Login = () => {
     }
 
     async function handleMfaLogin(user) {
+        // MFA login handler
         const jsonPayload = {
             tableName: "userLoginInfo",
             operation: "READ",
@@ -108,6 +104,7 @@ const Login = () => {
         };
         let expectedQuestion = '';
         const question = await invokeLambda("lambdaDynamoDBClient", jsonPayload);
+        // Choose the selected question from the DynamoDB table
         switch (selectedQuestion) {
             case 1:
                 expectedQuestion = question.secretQuestion1;
@@ -136,7 +133,6 @@ const Login = () => {
                 .then(() => {
                     // Password reset email sent!
                     toast.success("Password reset email sent to user!");
-                    // You can add toast here to notify user about the email sent
                 })
                 .catch((error) => {
                     // An error occurred
@@ -144,7 +140,6 @@ const Login = () => {
                     var errorMessage = error.message;
                     // ..
                     toast.error(errorMessage);
-                    // You can add toast here to notify user about the error
                 });
         };
     const handleChangeMfaModal = (e) => {
@@ -162,6 +157,7 @@ const Login = () => {
         const userMfaData = await invokeLambda("lambdaDynamoDBClient", jsonPayload);
         let expectedAnswer = '';
         switch (secretQuestionNumber) {
+            // Compare selected question with answers.
             case 1:
                 expectedAnswer = userMfaData.secretAnswer1;
                 break;
@@ -193,6 +189,7 @@ const Login = () => {
     };
     const handleModalSubmit = async (e) => {
         e.preventDefault();
+        // Store user MFA data for gmail user on first-time login.
         const jsonPayload = {
             tableName: "userLoginInfo",
             operation: "CREATE",
@@ -208,6 +205,7 @@ const Login = () => {
             }
         }
         const currentUser = getAuth().currentUser;
+        // update the player statistics table.
         const userProfileJsonPayload =
             {
                 tableName: "User",
@@ -227,7 +225,9 @@ const Login = () => {
 
         toast.success("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
+        // in case of Google user logging in for the first time, subscribe the user to game updates.
         await subscribeToGameUpdates(userEmail);
+        // create an SES identity for the user in case of Gmail user logging in for the first time.
         await createEmailIdentity(userEmail);
     };
     return (

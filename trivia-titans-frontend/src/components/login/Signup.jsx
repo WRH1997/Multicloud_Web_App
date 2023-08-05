@@ -6,6 +6,8 @@ import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
 import {createEmailIdentity} from "../common/AuthContext";
 import {ToastContainer,toast} from "react-toastify";
 
+
+// handles form sign up
 const
     HandleSignUp = () => {
         const [email,setEmail] = useState('');
@@ -31,6 +33,8 @@ const
                 .then(async (userCredential) => {
                     // Sign-up success
 
+                    // adding tuple to DynamoDB.
+
                     const user = userCredential.user;
                     const jsonPayload = {
                         tableName: "userLoginInfo",
@@ -48,6 +52,7 @@ const
                         }
                     };
 
+                    // updating display name for user as displayName is not automatically picked up.
                     await updateProfile(user,{
                         displayName: displayName
                     });
@@ -67,8 +72,9 @@ const
                             }
                         };
                     await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);
-                    // You can redirect the user to a new page or perform other actions here
+                    // Subscribing user to SNS topic, to get notifications.
                     await subscribeToGameUpdates(user.email);
+                    // Verifying user's email identity
                     await createEmailIdentity(user.email);
                 })
                 .catch((error) => {
