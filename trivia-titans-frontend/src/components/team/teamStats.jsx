@@ -305,7 +305,7 @@ const TeamPage = () => {
             {teamMembers.map((team, index) => (
                 <div key={index}>
                 <p>Player Email: {team.playerEmail.S}
-                    <p>Player Permission: {team.teamPermission.S}
+                    <p>Player Email: {team.playerEmail.S}</p>
                         <Button
                 variant="contained"
                 color="secondary"
@@ -313,7 +313,6 @@ const TeamPage = () => {
                 >
                 Remove From Team
                 </Button></p>
-
                 <Button
                 variant="contained"
                 color="secondary"
