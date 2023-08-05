@@ -1,6 +1,9 @@
 import invokeLambdaFunction from "./InvokeLambda";
 
+// Common file for handling team statistics and team member permissions.
+
 export const fetchMemberTeamData = async (currentUserEmail) => {
+    // get data about specific user from the team.
     const jsonPayload = {
         tableName: "teamMembers",
         operation: "READ",
@@ -15,6 +18,7 @@ export const fetchCurrentMemberPermissions = async (currentUser) => {
    return playerTeamInfo.teamPermission;
 }
 export const fetchAllTeamMembersData = async (playerTeamName) => {
+    // Get all team members in a team.
     const jsonPayload = {
         tableName: "teamMembers",
         operation: "SCAN_WITH_PARAMS",
@@ -25,6 +29,7 @@ export const fetchAllTeamMembersData = async (playerTeamName) => {
 }
 export const fetchCurrentTeamStatistics = async (teamName) =>
 {
+    // get all statistics for the current team.
     const jsonPayload = {
         tableName: "teamStats",
         operation: "READ",

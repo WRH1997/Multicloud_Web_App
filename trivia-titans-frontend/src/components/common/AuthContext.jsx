@@ -6,6 +6,7 @@ import {CognitoIdentityClient} from "@aws-sdk/client-cognito-identity";
 import { SESClient, VerifyEmailIdentityCommand } from "@aws-sdk/client-ses";
 export const AuthContext = React.createContext(null);
 
+// Common files for User statistics, Authentication and permission management.
 export const  AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const auth = getAuth();
