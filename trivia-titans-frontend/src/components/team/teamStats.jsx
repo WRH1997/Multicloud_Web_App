@@ -296,6 +296,7 @@ const TeamPage = () => {
             {isTeamPlayer && teamMembers && teamStatistics && (
 
                 <div className="team-stats">
+                <p><strong>Score:</strong> {teamStatistics.teamName}</p>
                 <p><strong>Score:</strong> {teamStatistics.totalScore}</p>
                 <p><strong>Win/Loss Ratio:</strong> {teamStatistics.winLossRatio}</p>
                 <p><strong>Total Games:</strong> {teamStatistics.totalGames}</p>
@@ -303,14 +304,15 @@ const TeamPage = () => {
                 <h3>Team Members are displayed below:</h3>
             {teamMembers.map((team, index) => (
                 <div key={index}>
-                <p>Player Email: {team.playerEmail.S} <Button
+                <p>Player Email: {team.playerEmail.S}
+                    <p>Player Email: {team.playerEmail.S}</p>
+                        <Button
                 variant="contained"
                 color="secondary"
                 onClick={() => removeTeamMember(team.playerEmail.S)}
                 >
                 Remove From Team
                 </Button></p>
-
                 <Button
                 variant="contained"
                 color="secondary"
