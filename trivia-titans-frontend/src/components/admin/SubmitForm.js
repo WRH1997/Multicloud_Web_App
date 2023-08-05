@@ -143,9 +143,6 @@ const SubmitForm = () => {
     });
 
     AWS.config.update({
-      region: 'us-east-1',
-      accessKeyId: 'AKIA5V5W2TFSX4CBOO4F', 
-      secretAccessKey: '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',
     });
     
 
