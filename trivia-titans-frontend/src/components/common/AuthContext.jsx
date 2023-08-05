@@ -33,7 +33,11 @@ export const getCurrentUserPermissionLevel = async (userEmail) => {
             userEmail: userEmail
         }
     };
-    return invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload).type.toString();
+    const response = await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
+    if(response)
+        return response.type
+    else
+        return response
 }
 
 
@@ -44,7 +48,7 @@ export async function createEmailIdentity(userEmail) {
     });
     const ses = new SESClient({ region: "us-east-1",credentials: sesClientCredentials });
     const params = {
-        EmailIdentity: userEmail // Replace example@example.com with your email address
+        EmailAddress: userEmail
     };
     try {
         const data = await ses.send(new VerifyEmailIdentityCommand(params));

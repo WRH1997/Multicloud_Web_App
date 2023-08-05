@@ -11,7 +11,7 @@ export const fetchMemberTeamData = async (currentUserEmail) => {
     return await invokeLambdaFunction('lambdaDynamoDBClient', jsonPayload);
 }
 export const fetchCurrentMemberPermissions = async (currentUser) => {
-   const playerTeamInfo = fetchCurrentMemberPermissions(currentUser);
+   const playerTeamInfo = await fetchMemberTeamData(currentUser.email);
    return playerTeamInfo.teamPermission;
 }
 export const fetchAllTeamMembersData = async (playerTeamName) => {

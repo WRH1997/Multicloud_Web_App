@@ -1,6 +1,6 @@
 import {addDoc, collection, getFirestore, onSnapshot, orderBy, query,serverTimestamp} from 'firebase/firestore';
-import firebaseClient from "./firebase";
-import React, {useContext, useEffect, useState} from "react";
+import {firebaseClient} from "./firebase";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import {fetchMemberTeamData} from "./teamContext";
 import {AuthContext} from "./AuthContext";
 import { Button, TextField, List, ListItem, ListItemText, Typography, Container, Paper } from "@mui/material";
@@ -14,6 +14,18 @@ const Chat = () => {
     const [name,setName]=useState('');
     const [teamName,setTeamName] =useState(null);
     const currentUser = useContext(AuthContext)
+
+    const scrollRef = useRef(null);
+
+    useEffect(() => {
+
+        if (scrollRef.current && scrollRef.current.lastElementChild) {
+
+            scrollRef.current.lastElementChild.scrollIntoView({ behavior: "smooth" });
+
+        }
+
+    }, [message, chat, scrollRef]);
 
     useEffect(() => {
         const getTeamPlayerData = async () => {
@@ -56,7 +68,7 @@ const Chat = () => {
         return chat.map(({name, message,timestamp}, idx) => (
             <ListItem key={idx}>
                 <ListItemText primary={name} secondary={message}/>
-                 <ListItemText >
+                 <ListItemText>
                      <span style={{ fontSize: "0.60rem" }}>{timestamp ? timestamp.toDate().toString():'...'}</span>
                  </ListItemText>
             </ListItem>
@@ -72,7 +84,7 @@ const Chat = () => {
             )}
             {isTeamPlayer && (
                 <Paper style={{ maxHeight: '70vh', overflow: 'auto' }}>
-                    <List>{renderChat()}</List>
+                    <List ref={scrollRef}>{renderChat()}</List>
                     <form onSubmit={onMessageSubmit} style={{ position: 'sticky', bottom: 0, padding: '10px', background: 'white', borderTop: '1px solid #ddd' }}>
                         <TextField
                             name="message"

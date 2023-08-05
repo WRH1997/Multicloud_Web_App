@@ -46,56 +46,19 @@ export default function LandingPage() {
           <Typography variant="h5" sx={{
             marginBottom: 5,
           }}>
-            Form teams with your friends and compete against other teams in real-time - FINAL E2E Test of CI/CD !
+            Form teams with your friends and compete against other teams in real-time - SDP 10
           </Typography>
-          <Button
-            variant="contained"
-            onClick={() => navigate("/Login")}
-          >
-            Join Us
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => navigate("/ConfigureTriviaGames")}
-          >
-            Manage Trivia Games
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => navigate("/TriviaGameLobby")}
-          >
-            Trivia Game Lobby
-          </Button>
-          <Button
-              variant="contained"
-              onClick={() => navigate("/Signup")}
-          >
-            Create a New User
-          </Button>
-          <Button
-              variant="contained"
-              onClick={() => navigate("/Login")}
-          >
-        Login
-          </Button>
-          <Button
-              variant="contained"
-              onClick={() => navigate("/ManageTeams")}
-          >
-            Team Management
-          </Button>
-          <Button
-              variant="contained"
-              onClick={() => navigate("/EditProfile")}
-          >
-            Edit Profile
-          </Button>
-          <Button
-              variant="contained"
-              onClick={() => navigate("/Leaderboard")}
-          >
-            Leaderboard
-          </Button>
+          <Typography variant="h5" sx={{
+            marginBottom: 5,
+          }}>
+            <b>Developed By:</b><br />
+            Adithya Hadadi <br />
+            Parth Jindal <br />
+            Sourav . <br />
+            Rishi Vasa <br />
+            Waleed Al Hindi <br />
+
+          </Typography>
         </Grid>
       </Grid>
     </Grid>

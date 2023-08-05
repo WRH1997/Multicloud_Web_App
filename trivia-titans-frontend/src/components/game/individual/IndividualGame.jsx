@@ -1,16 +1,36 @@
-import { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { useNavigate } from "react-router";
+import { useLocation } from 'react-router-dom';
 import invokeLambdaFunction from "../../common/InvokeLambda";
+import { appTheme } from '../../../themes/theme';
+import {AuthContext} from "../../common/AuthContext";
+import { Button, CssBaseline, FormControlLabel, Grid, Radio, RadioGroup, ThemeProvider, Typography } from "@mui/material";
+import Countdown from 'react-countdown';
+
 
 export default function IndividualGame(){
+
+    const currentUser = useContext(AuthContext);
+
+    const AWS = require("aws-sdk");
+    AWS.config.region = 'us-east-1';
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-east-1:79432309-bc2e-447e-86b7-84c5b115e0e0',
+    });
+    const dynamoClient = new AWS.DynamoDB.DocumentClient({});
+
+    const { state } = useLocation();
+    const triviaGame = state.triviaGame;
+    const gameId = triviaGame.GameId;
 
     const nav = useNavigate();
     const [questions, setQuestions] = useState([]);
     const [loaded, setLoaded] = useState(false);
+    const [quizTime, setquizTime] = useState(1);
+    const [selectedOptions, setSelectedOptions] = useState({});
 
     useEffect(()=>{
-        //Swap hard-coded game ID with ID from data passed through props once integrated
-        getGame("3b726d4f-4f9f-4b38-beb0-aa5df45dbce2");
+        getGame(gameId);
     },[]);
 
     const getGame = async (gameId) => {
@@ -28,10 +48,11 @@ export default function IndividualGame(){
             const data = await invokeLambdaFunction("ScanWithFilterExpr_DynamoDBClient", jsonPayload);
             if(data.length==0){
                 alert("Game ID Does not Correspond to an Existing Game!\nRedirecting back to all games...");
-                //nav('/browsetriviagames');
+                nav('/triviagamelobby');
             }
             else{
                 let qData = data[0].Questions;
+                setquizTime(data[0].QuizTime);
                 getQs(qData);
             }
         }
@@ -39,6 +60,7 @@ export default function IndividualGame(){
             console.log("Error: " + e);
         }
     }
+
 
     const getQs = async (questionIds) => {
         try {
@@ -68,54 +90,116 @@ export default function IndividualGame(){
         };
 
 
+        const handleOptionChange = (questionIndex, value) => {
+            setSelectedOptions((prevState) => ({
+                ...prevState,
+                [questionIndex]: value,
+            }));
+        };
 
-    //Endpoints/params integrated in place of below temp code
-    const submitQuiz = () => {
-        let res = [];
-        let correctQ = 0;
-        let totalQs = questions.length;
-        for(let x=0; x<totalQs; x++){
-            let options = document.getElementsByName(x.toString());
-            let qOutcome = {};
-            for(let y=0; y<options.length; y++){
-                if(options[y].value=="Correct"){
-                    qOutcome["correctAnswer"] = options[y].className;
-                }
-                if(options[y].checked){
-                    qOutcome["yourAnswer"] = options[y].className;
-                    if(options[y].value=="Correct"){
-                        correctQ++;
-                        qOutcome["status"] = "Correct"
-                    }
-                    else{
-                        qOutcome["status"] = "Wrong"
-                    }
-                }
-            }
-            res.push(qOutcome);
+    const updateScoreTable = async (grade) => {
+        let updateExpr = "";
+        if(grade>=70){
+            updateExpr = "set games_played = games_played + :inc, total_points_earned = total_points_earned + :grade, win = win + :inc";
         }
-        let finalizedRes = {"totalQ":totalQs, "correctQ": correctQ, "Grade": ((correctQ/totalQs)*100), "Results": res};
-        alert(JSON.stringify(finalizedRes));
+        else{
+            updateExpr = "set games_played = games_played + :inc, total_points_earned = total_points_earned + :grade";
+        }
+        const params = {
+            TableName: "User",
+            Key: {
+                "uid": currentUser.uid
+            },
+            UpdateExpression: updateExpr,
+            ExpressionAttributeValues: {
+                ":inc": 1,
+                ":grade": grade
+            }
+        };
+        await dynamoClient.update(params).promise();
     }
 
+
+    const submitQuiz = () => {
+        const results = questions.map((question, index) => {
+            const selectedValue = selectedOptions[index];
+            const selectedOption = question.options[selectedValue];
+            const isCorrect = (selectedOption?.verdict || "Not answered") === "Correct";
+
+            const qOutcome = {
+                correctAnswer: question.options.find((option) => option.verdict === "Correct")?.text,
+                yourAnswer: selectedOption?.text || "Not answered",
+                status: isCorrect ? "Correct" : "Wrong",
+            };
+            return qOutcome;
+        });
+
+        const totalQs = results.length;
+        const correctQ = results.filter((result) => result.status === "Correct").length;
+        const grade = (correctQ / totalQs) * 100;
+
+        updateScoreTable(grade);
+
+        nav("/IndividualGameResults", {
+            state: {
+                totalQs: totalQs,
+                correctQ: correctQ,
+                grade: grade,
+                answers: results,
+            }
+        })
+    }
+
+
     return(
-        <div>
-            <div>
-            {Object.keys(questions).map((key, i) => (
-                <div>
-                    Question: {questions[key]["text"]}
-                    <br></br>
-                    {questions[key]["options"].map((option) => (
-                        <div>
-                        {option["text"]}: <input type='radio' className={option["text"]} value={option["verdict"]} name={key}></input>
-                        </div>
-                    ))}
-                    <br></br>
-                    <hr></hr>
-                </div>
-            ))}
-            </div>
-            <input type='submit' id='submitQuiz' className='submitQuiz' onClick={submitQuiz} value="Submit"></input>
-        </div>
+        <center>
+       <ThemeProvider theme={appTheme}>
+            <CssBaseline />
+            <Grid container sx={{ margin: 5 }}>
+
+
+                <Grid item xs={10} md={4}>
+                    <Grid container direction="column" spacing={2} alignItems="center" justifyContent="center">
+
+                        <Grid item sx={{ margin: 2 }}>
+                            Time Left:
+                            <Countdown date={Date.now() + (quizTime * 60 * 1000)}
+                                onComplete={() => submitQuiz()} />
+                        </Grid>
+                        
+                        <Grid item sx={{ margin: 2 }}>
+                            {Object.keys(questions).map((key, i) => (
+                                <div key={questions[key].id}>
+                                    <Typography variant="h6">Question: {questions[key]["text"]}</Typography>
+                                    <br />
+                                    <RadioGroup name={key} value={selectedOptions[key] || ""} onChange={(e) => handleOptionChange(key, e.target.value)}>
+                                        {questions[key]["options"].map((option, index) => (
+                                            <div key={option.id}>
+                                                <FormControlLabel
+                                                    control={<Radio />}
+                                                    label={option["text"]}
+                                                    value={index}
+                                                    className={option["text"]}
+                                                />
+                                            </div>
+                                        ))}
+                                    </RadioGroup>
+                                    <br />
+                                    <hr />
+                                </div>
+                            ))}
+                        </Grid>
+
+                        <Grid item xs={12} sx={{ margin: 2 }}>
+                            <Button variant="contained" color="primary" onClick={submitQuiz}>
+                                Submit
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+            </Grid>
+        </ThemeProvider >
+        </center>
     )
 }

@@ -233,7 +233,9 @@ const EditTriviaGameForm = ({ open, onClose, formData, setFormData, setSnackbarO
             setSnackbarOpen(true);
 
             setFormData({ GameName: "", Description: "", GameCategory: "", GameDifficulty: "", QuizTime: "", StartDate: "", EndDate: "" })
-
+            setTimeout(function () {
+                window.location.reload();
+            }, 2500);
         } catch (error) {
             setSnackbarSeverity('error');
             setSnackbarMessage(

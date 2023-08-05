@@ -14,22 +14,29 @@ import ConfigureTriviaGames from "../components/admin/ConfigureTriviaGames";
 import {UpdateTriviaGame} from "../components/admin/ConfigureTriviaGameConfigurations/UpdateTriviaGame";
 import BrowseTriviaGames from "../components/admin/BrowseTriviaGames"
 import TeamPage from "../components/team/teamStats";
-import Chat from "../components/common/ChatBox";
 import TriviaGameLobby from "../components/game/TriviaGameLobby";
 import IndividualGame from "../components/game/individual/IndividualGame";
 import TeamGameLobby from "../components/game/team/TeamGameLobby"
 import TeamTriviaGame from "../components/game/team/TeamTriviaGame"
 import TeamGameResults from "components/game/team/TeamGameResults";
 import Chatbot from '../components/common/Chatbot';
+import GetUserStatistics from "../components/statistics/userStatistics";
+import UserLeaderboardPage from "components/leaderboard/UserLeaderboard";
+import NavBar from "../components/common/NavBar";
+import IndividualGameResults from "../components/game/individual/IndividualGameResults";
+import Report from "../components/report/viewReport";
+import UserPhoto from "../components/common/UserPhoto"
 
 const AppRoutes = () => {
     return (
         <AuthProvider>
+            <NavBar />
         <Routes>
             <Route path="/" element={<LandingPage/>} />
             <Route path='*' element={<DefaultNotFound />} />
             <Route path='CreateTriviaGame' element={<CreateTriviaGame />} />
             <Route path='EditProfile' element={<EditProfile/>} />
+            <Route path='/GetUserStatistics' element={<GetUserStatistics />} />
             <Route path='SignUp' element={<HandleSignUp/>} />
             <Route path='Login' element={<Login/>} />
             <Route path='Logout' element={<Logout/>} />
@@ -44,6 +51,9 @@ const AppRoutes = () => {
             <Route path='/TeamGameLobby' element={<TeamGameLobby />} />
             <Route path='/TeamTriviaGame' element={<TeamTriviaGame />} />
             <Route path='/TeamGameResults' element={<TeamGameResults />} />
+            <Route path='/UserLeaderboard' element={<UserLeaderboardPage />} />
+            <Route path='/IndividualGameResults' element={<IndividualGameResults />} />
+            <Route path='/Report' element={<Report />} />
         </Routes>
         <Chatbot />
         </AuthProvider>

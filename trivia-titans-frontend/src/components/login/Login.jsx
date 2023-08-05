@@ -1,4 +1,4 @@
-import { getAuth, signInWithPopup,signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup,signInWithEmailAndPassword,sendPasswordResetEmail,GoogleAuthProvider, signOut } from "firebase/auth";
 import React, {useState} from "react";
 import {Modal, Paper, Box, Typography, Grid, Container, InputAdornment, IconButton} from '@mui/material';import invokeLambda from "../common/InvokeLambda";
 import {Button, TextField} from "@mui/material";
@@ -9,7 +9,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {useLocation, useNavigate} from "react-router-dom";
 import { subscribeToGameUpdates } from "../admin/GameUpdateNotifications";
 import {createEmailIdentity} from "../common/AuthContext";
-
+import {ToastContainer,toast} from "react-toastify";
 
 const Login = () => {
     const routeLocation = useLocation();
@@ -27,11 +27,13 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [userEmail, setUserEmail] = useState(null);
+    const [secretQuestionNumber, setSecretQuestionNumber] = useState(null);
     const [secretQuestion, setSecretQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [mfaModalIsOpen, setMfaModalIsOpen] = useState(false);
     const selectedQuestion = Math.floor(Math.random() * 2) + 1;
     const navigate = useNavigate();
+
 
     const handleLogin = async (e) => {
 
@@ -46,12 +48,10 @@ const Login = () => {
                     } else {
                         await handleMfaLogin(result.user);
                     }
-
                 }
             ).catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            // The email of the user's account used.
             const email = error.customData.email;
             const credential = GoogleAuthProvider.credentialFromError(error);
 
@@ -120,6 +120,7 @@ const Login = () => {
                 break;
         }
         setSecretQuestion(expectedQuestion);
+        setSecretQuestionNumber(selectedQuestion);
         setMfaModalIsOpen(true);
     }
 
@@ -129,6 +130,23 @@ const Login = () => {
             [e.target.name]: e.target.value,
         });
     };
+        const handleResetPassword = () => {
+            const auth = getAuth();
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    // Password reset email sent!
+                    toast.success("Password reset email sent to user!");
+                    // You can add toast here to notify user about the email sent
+                })
+                .catch((error) => {
+                    // An error occurred
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    // ..
+                    toast.error(errorMessage);
+                    // You can add toast here to notify user about the error
+                });
+        };
     const handleChangeMfaModal = (e) => {
         setAnswer(e.target.value);
     };
@@ -143,7 +161,7 @@ const Login = () => {
         };
         const userMfaData = await invokeLambda("lambdaDynamoDBClient", jsonPayload);
         let expectedAnswer = '';
-        switch (selectedQuestion) {
+        switch (secretQuestionNumber) {
             case 1:
                 expectedAnswer = userMfaData.secretAnswer1;
                 break;
@@ -154,14 +172,22 @@ const Login = () => {
                 expectedAnswer = userMfaData.secretAnswer3;
                 break;
         }
-        console.log(answer, expectedAnswer, selectedQuestion);
-        console.log(await invokeLambda("lambdaDynamoDBClient", jsonPayload));
         if (answer === expectedAnswer) {
-            console.log("MFA USER LOGIN SUCCESS ");
+            toast.success("MFA USER LOGIN SUCCESS ");
             navigate(-1);
         } else {
-            console.log("MFA USER LOGIN FAILED!! wrong answer ");
-            Logout();
+            const auth = getAuth();
+            signOut(auth).then(() => {
+                toast.success("USER LOGOUT!!!")
+                toast.error("MFA USER LOGIN FAILED!! wrong answer ");
+                function fun () { window.location.reload() };
+                setTimeout(function () {
+                    fun();
+                }, 2000);
+                // Sign-out successful.
+            }).catch((error) => {
+                // An error happened.
+            });
         }
         setMfaModalIsOpen(false);
     };
@@ -181,16 +207,32 @@ const Login = () => {
                 type: "USER"
             }
         }
+        const currentUser = getAuth().currentUser;
+        const userProfileJsonPayload =
+            {
+                tableName: "User",
+                operation: "CREATE",
+                item: {
+                    Email: currentUser.email,
+                    displayName:currentUser.displayName,
+                    uid: currentUser.uid,
+                    games_played:0,
+                    total_points_earned:0,
+                    win:0
+                }
+            };
+        await invokeLambdaFunction("Create_DynamoDBClient", userProfileJsonPayload);
 
-        const lambdaResponse = invokeLambdaFunction("lambdaDynamoDBClient", jsonPayload);
-        console.log("MFA Registered for user !", userEmail);
+        await invokeLambdaFunction("Create_DynamoDBClient", jsonPayload);
+
+        toast.success("MFA Registered for user !", userEmail);
         setModalIsOpen(false);
-        //After Completing Registration, perform whatever actions you want here
         await subscribeToGameUpdates(userEmail);
         await createEmailIdentity(userEmail);
     };
     return (
         <Container component="main" maxWidth="xs">
+            <ToastContainer/>
             <div>
                 <Typography component="h1" variant="h5">
                     Login
@@ -242,6 +284,14 @@ const Login = () => {
                         color="primary"
                     >
                         Login
+                    </Button>
+                    <Button
+                        onClick={handleResetPassword}
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                    >
+                        Reset Password
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
