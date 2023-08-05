@@ -128,7 +128,8 @@ const TeamPage = () => {
     const sendEmailInvite = () => {
         //Send invite to user's email.
         toast.success(`Invitation sent to: ${email}`);
-        notifyJoinTeam(email, teamName);
+        const formattedTeamName = encodeURIComponent(teamName.trim())
+        notifyJoinTeam(email, formattedTeamName);
         setEmail("");
         setOpen(false);
     };
@@ -296,7 +297,7 @@ const TeamPage = () => {
             {isTeamPlayer && teamMembers && teamStatistics && (
 
                 <div className="team-stats">
-                <p><strong>Score:</strong> {teamStatistics.teamName}</p>
+                <p><strong>Team Name:</strong> {teamStatistics.teamName}</p>
                 <p><strong>Score:</strong> {teamStatistics.totalScore}</p>
                 <p><strong>Win/Loss Ratio:</strong> {teamStatistics.winLossRatio}</p>
                 <p><strong>Total Games:</strong> {teamStatistics.totalGames}</p>
