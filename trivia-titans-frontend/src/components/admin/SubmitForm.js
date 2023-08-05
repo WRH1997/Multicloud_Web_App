@@ -5,18 +5,18 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
 
-const SubmitForm = () => {
+const SubmitForm = ({questionId, questionText, verdictArr, expArr, inputArr, difficultyLevel}) => {
   const difficulty_level = ['Hard', 'Medium', 'Easy'];
   const question_result = ['Incorrect','Correct'];
-  const message = '';
 
   const [inputs, setInputs] = useState([]);
-  const [explanation, setExplanation] = useState([]);
-  const [verdict, setVerdict] = useState([]);
-  const [quesText, setQuesText] = useState('');
-  const [diffVal,  setDiffVal] = useState(difficulty_level[0]);
+  const [explanation, setExplanation] = useState(expArr);
+  const [verdict, setVerdict] = useState(verdictArr);
+  const [quesText, setQuesText] = useState(questionText);
+  const [diffVal,  setDiffVal] = useState(difficultyLevel);
   const [errorMessage, setErrorMessage] = useState("");
 
+  console.log('questionText-', questionText);
 
   const addInput = () => {
     setInputs([...inputs, '']);
@@ -129,7 +129,7 @@ const SubmitForm = () => {
       tableName: "triviaquestion",
       operation: "CREATE",
       item: {
-        id: uuidv4(),
+        id: questionId === 0 ? uuidv4() : questionId,
         text: quesText,
         category: result[0],
         difficulty_level: diffVal,
@@ -143,8 +143,10 @@ const SubmitForm = () => {
     });
 
     AWS.config.update({
+      region: 'us-east-1',
+      accessKeyId: 'AKIA5V5W2TFS4OOK244N',
+      secretAccessKey: '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'
     });
-    
 
     const params = {
       FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:lambdaDynamoDBClient',
@@ -171,7 +173,7 @@ const SubmitForm = () => {
           <FormLabel component="legend">Create Question</FormLabel>
           <FormGroup>
             <TextField label="Question Text" variant="outlined" 
-            onChange={(event) => handleChangeQuesText(event.target.value)} 
+            onChange={(event) => handleChangeQuesText(event.target.value)} value={quesText}
             fullWidth />
           </FormGroup>
         </Grid>
@@ -206,7 +208,7 @@ const SubmitForm = () => {
         <Grid item xs={12} container justifyContent="center" alignItems="center">
           <FormGroup>
           <FormLabel component="legend">Difficulty Level</FormLabel>
-            <select onChange={(event) => handleChangeDiffVal(event.target.value)}>
+            <select onChange={(event) => handleChangeDiffVal(event.target.value)} value={diffVal}>
               {
                 difficulty_level.map((value, index) => (
                   <option value={value} key={index}>{value}</option>
