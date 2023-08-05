@@ -33,6 +33,7 @@ const TeamPage = () => {
         }
     }, [currentUser, navigate]);
     useEffect(() => {
+        // useEffect hook renders after all dependencies are loaded.
         const getTeamPlayerData = async () => {
             if (currentUser) {
                 const teamPlayerData = await fetchMemberTeamData(currentUser.email);
@@ -47,6 +48,7 @@ const TeamPage = () => {
         getTeamPlayerData();
     }, [currentUser]);
     useEffect(() => {
+        // Get all team member's data.
         const getTeamMemberList = async () => {
             if (isTeamPlayer) {
                 const teamMemberData = await fetchAllTeamMembersData(teamName);
@@ -77,6 +79,7 @@ const TeamPage = () => {
 
     const generateTeamName = async () => {
         try {
+            // get AI generated Team Name
             const response = await axios.get(process.env.REACT_APP_GENERATE_TEAM_NAME_CLOUD_FUNCTION_URL);
 
             if (response.status !== 200) {
@@ -120,11 +123,10 @@ const TeamPage = () => {
         setIsTeamPlayer(true);
         const currentTeamStats=await fetchCurrentTeamStatistics(teamName);
         setTeamStatistics(currentTeamStats);
-        window.location.reload();
     }
 
     const sendEmailInvite = () => {
-        // Add your code here to handle the invite
+        //Send invite to user's email.
         toast.success(`Invitation sent to: ${email}`);
         notifyJoinTeam(email, teamName);
         setEmail("");
@@ -199,7 +201,9 @@ const TeamPage = () => {
                         }
                     };
                    await invokeLambdaFunction('Delete_DynamoDBClient', deleteTeamStats);
-                } else if (teamPlayerData.teamPermission === 'MEMBER' || currentMemberPermissions === 'ADMIN' ) {
+                }
+                // delete individual member from the team.
+                else if (teamPlayerData.teamPermission === 'MEMBER' || currentMemberPermissions === 'ADMIN' ) {
                     const jsonPayload2 = {
                         tableName: "teamMembers",
                         operation: "DELETE",
