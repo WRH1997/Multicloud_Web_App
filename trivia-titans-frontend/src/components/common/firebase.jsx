@@ -1,4 +1,6 @@
 import { initializeApp } from "firebase/app";
+
+// firebase config for Auth and Chat
 const firebaseConfig = {
     apiKey: "AIzaSyDSm_s83bfskVFpBF1HPAV1HAiInm4mTh0",
     authDomain: "sdp10-trivia-titans.firebaseapp.com",
@@ -10,6 +12,7 @@ const firebaseConfig = {
 };
 const firebaseClient = initializeApp(firebaseConfig);
 
+// firebase config for Team Session state.
 const firebaseConfigRishi = {
     apiKey: "AIzaSyAK1-Z1FjCavLpAq-w6cNR6r5qrc582hw8",
     authDomain: "csci-5410-s23-b00902815.firebaseapp.com",
