@@ -7,15 +7,15 @@ import axios from 'axios';
 
 const SubmitForm = () => {
   const difficulty_level = ['Hard', 'Medium', 'Easy'];
-  const category = ['Sports', 'Movies', 'Books', 'General'];
   const question_result = ['Incorrect','Correct'];
+  const message = '';
 
   const [inputs, setInputs] = useState([]);
   const [explanation, setExplanation] = useState([]);
   const [verdict, setVerdict] = useState([]);
   const [quesText, setQuesText] = useState('');
-  const [categVal, setCategVal] = useState(category[0]);
   const [diffVal,  setDiffVal] = useState(difficulty_level[0]);
+  const [errorMessage, setErrorMessage] = useState("");
 
 
   const addInput = () => {
@@ -26,10 +26,6 @@ const SubmitForm = () => {
 
   const handleChangeQuesText = (text) => {
     setQuesText(text);
-  }
-
-  const handleChangeCategVal = (text) => {
-    setCategVal(text);
   }
 
   const handleChangeDiffVal = (text) => {
@@ -72,9 +68,59 @@ const SubmitForm = () => {
       throw error;
     }
   };
+
+  const checkVerdicts = () => {
+    let x = false;
+    verdict.forEach((value, index)=>{
+      if(value==='Correct'){
+        x = true;
+        return;
+      }
+    });
+    return x;
+  }
+
+  const checkVerdictLength = () => {
+    return !(verdict.length===0);
+  }
+
+  const checkInputsLength = () => {
+    return !(inputs.length===0);
+  }
+
+  const checkQuestion = () => {
+    return !(quesText.length===0);
+  }
+
+
+  const isValid = () => {
+    if(!checkQuestion()){
+      return `Question shouldn't be empty.`;
+    }
+
+    if(!checkInputsLength()){
+      return `Options shouldn't be empty.`;
+    }
+
+    if(!checkVerdictLength()){
+      return `Options' verdict shouldn't be empty.`;
+    }
+
+    console.log('verdict', checkVerdicts());
+    if (!checkVerdicts()){
+      return `Can't have all Incorrect options.`;
+    }
+    return '';
+  }
   
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const msg = isValid();
+    setErrorMessage(msg);
+    if(msg.length!==0){
+      return;
+    }
 
     const result = await getTag(quesText);
     console.log(result[0]);
@@ -97,6 +143,9 @@ const SubmitForm = () => {
     });
 
     AWS.config.update({
+      region: 'us-east-1',
+      accessKeyId: 'AKIA5V5W2TFSX4CBOO4F', 
+      secretAccessKey: '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',
     });
     
 
@@ -106,13 +155,16 @@ const SubmitForm = () => {
     };
     const lambda = new AWS.Lambda();
 
-    try {
+    try { 
       const response = await lambda.invoke(params).promise();
       console.log(response);
+      window.location.href = '/';
     } catch (error) {
       console.log('Error:', error);
     }
     console.log(data.item.options);
+
+    
   };
 
     return (
@@ -154,7 +206,7 @@ const SubmitForm = () => {
             ))}
           </div>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} container justifyContent="center" alignItems="center">
           <FormGroup>
           <FormLabel component="legend">Difficulty Level</FormLabel>
             <select onChange={(event) => handleChangeDiffVal(event.target.value)}>
@@ -166,23 +218,14 @@ const SubmitForm = () => {
             </select>
           </FormGroup>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <FormGroup>
-          <FormLabel component="legend">Category</FormLabel>
-            <select onChange={(event) => handleChangeCategVal(event.target.value)}>
-              {
-                category.map((value, index) => (
-                  <option value={value} key={index}>{value}</option>
-                ))
-              }
-            </select>
-          </FormGroup>
-        </Grid>
         <Grid item xs={12}>
           <Button variant="contained" color="primary" type="submit">
             Submit
           </Button>
         </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
       </Grid>
     </FormControl>
     );
