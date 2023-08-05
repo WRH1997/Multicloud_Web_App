@@ -12,9 +12,6 @@ const getQuestions = async () => {
       };
 
       AWS.config.update({
-        region: 'us-east-1',
-        accessKeyId: 'AKIA5V5W2TFS4OOK244N',
-        secretAccessKey: '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'
       });
 
 
@@ -75,6 +72,36 @@ const QuestForm = () => {
         setShowForm(true);
     }
 
+    const onHandleDelete = async (id, dl) => {
+        console.log(id);
+        const data = {
+            tableName: "triviaquestion",
+            operation: "DELETE",
+            "key": {
+                id: id,
+                difficulty_level: dl
+            }
+          };
+    
+          AWS.config.update({
+          });
+    
+    
+        const params = {
+          FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:Delete_DynamoDBClient',
+          Payload: JSON.stringify(data)
+        };
+        const lambda = new AWS.Lambda();
+    
+        try { 
+            const res = await lambda.invoke(params).promise();
+            console.log(res);
+            window.location.href = '/';
+          } catch (error) {
+            console.log('Error:', error);
+          }
+    }
+
     return (
         <div style={{ display: 'block', textAlign: 'center', padding: '20px' }}>
             <div>
@@ -116,7 +143,7 @@ const QuestForm = () => {
                             />
                             <div style={{ marginLeft: 'auto' }}>
                                 <Button variant="contained" style={{ backgroundColor: 'green', marginRight: '10px' }} onClick={()=>{onHandleEdit(question['id'], question['text'], question['difficulty_level'], question['options'])}}>Edit</Button>
-                                <Button variant="contained" style={{ backgroundColor: 'red' }}>Delete</Button>
+                                <Button variant="contained" style={{ backgroundColor: 'red' }} onClick={()=>{onHandleDelete(question['id'], question['difficulty_level'])}}>Delete</Button>
                             </div>
                         </ListItem>
                         ))}

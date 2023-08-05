@@ -143,9 +143,6 @@ const SubmitForm = ({questionId, questionText, verdictArr, expArr, inputArr, dif
     });
 
     AWS.config.update({
-      region: 'us-east-1',
-      accessKeyId: 'AKIA5V5W2TFS4OOK244N',
-      secretAccessKey: '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'
     });
 
     const params = {
