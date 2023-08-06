@@ -73,33 +73,33 @@ const QuestForm = () => {
     }
 
     const onHandleDelete = async (id, dl) => {
-        console.log(id);
-        const data = {
-            tableName: "triviaquestion",
-            operation: "DELETE",
-            "key": {
-                id: id,
-                difficulty_level: dl
-            }
-          };
+        // console.log(id);
+        // const data = {
+        //     tableName: "triviaquestion",
+        //     operation: "DELETE",
+        //     "key": {
+        //         id: id,
+        //         difficulty_level: dl
+        //     }
+        //   };
     
-          AWS.config.update({
-          });
+        //   AWS.config.update({
+        //   });
     
     
-        const params = {
-          FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:Delete_DynamoDBClient',
-          Payload: JSON.stringify(data)
-        };
-        const lambda = new AWS.Lambda();
+        // const params = {
+        //   FunctionName: 'arn:aws:lambda:us-east-1:940444391781:function:Delete_DynamoDBClient',
+        //   Payload: JSON.stringify(data)
+        // };
+        // const lambda = new AWS.Lambda();
     
-        try { 
-            const res = await lambda.invoke(params).promise();
-            console.log(res);
-            window.location.href = '/';
-          } catch (error) {
-            console.log('Error:', error);
-          }
+        // try { 
+        //     const res = await lambda.invoke(params).promise();
+        //     console.log(res);
+        //     window.location.href = '/';
+        //   } catch (error) {
+        //     console.log('Error:', error);
+        //   }
     }
 
     return (
