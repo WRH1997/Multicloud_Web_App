@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+
+  #DynamoDB Table to store Records of TriviaGames
+  TriviaGames:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "TriviaGames"    
+      AttributeDefinitions:
+        - AttributeName: "GameId"
+          AttributeType: "S"
+        - AttributeName: "Timestamp"
+          AttributeType: "S"
+        - AttributeName: "StartDate"
+          AttributeType: "S"
+        - AttributeName: "EndDate"
+          AttributeType: "S"
+        - AttributeName: "GameDifficulty"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "GameId"
+          KeyType: "HASH"
+        - AttributeName: "Timestamp"
+          KeyType: "RANGE"
+      LocalSecondaryIndexes:
+        - IndexName: "StartDate-index"
+          KeySchema:
+            - AttributeName: "GameId"
+              KeyType: "HASH"
+            - AttributeName: "StartDate"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "EndDate-index"
+          KeySchema:
+            - AttributeName: "GameId"
+              KeyType: "HASH"
+            - AttributeName: "EndDate"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "GameDifficulty-index"
+          KeySchema:
+            - AttributeName: "GameId"
+              KeyType: "HASH"
+            - AttributeName: "GameDifficulty"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+      BillingMode: "PAY_PER_REQUEST"

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import React from 'react';
 import { Grid, Typography, Button } from '@mui/material';
+import Chatbot from './Chatbot';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function LandingPage() {
           alignItems="flex-start"
           height="100%"
         >
+          <Chatbot />
           <Typography variant="h2" sx={{
             marginBottom: 5,
           }}>
@@ -44,22 +46,22 @@ export default function LandingPage() {
           <Typography variant="h5" sx={{
             marginBottom: 5,
           }}>
-            Form teams with your friends and compete against other teams in real-time - FINAL E2E Test of CI/CD !
+            Form teams with your friends and compete against other teams in real-time - SDP 10
           </Typography>
-          <Button
-            variant="contained"
-            onClick={() => navigate("/Login")}
-          >
-            Join Us
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => navigate("/CreateTriviaGame")}
-          >
-            Admin Feature: Create Trivia Game
-          </Button>
+          <Typography variant="h5" sx={{
+            marginBottom: 5,
+          }}>
+            <b>Developed By:</b><br />
+            Adithya Hadadi <br />
+            Parth Jindal <br />
+            Sourav . <br />
+            Rishi Vasa <br />
+            Waleed Al Hindi <br />
+
+          </Typography>
         </Grid>
       </Grid>
     </Grid>
+
   );
 }

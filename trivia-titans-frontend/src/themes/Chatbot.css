@@ -1,0 +1,44 @@
+.popup-content {
+    margin: auto;
+    background: none;
+    width: 100%;
+    padding: 5px;
+  }
+
+  .popbtn{
+    font-size: 14pt;
+    border: solid black 1px;
+    border-radius: 25px;
+    padding: 1vh;
+    padding-right: 3vh;
+    padding-left: 3vh;
+  }
+  
+  .popup-arrow {
+    color: rgb(255, 255, 255);
+  }
+  [role='tooltip'].popup-content {
+    width: 200px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 3px;
+  }
+  
+  .popup-overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+  [data-popup='tooltip'].popup-overlay {
+    background: transparent;
+  }
+
+  .bot-div{
+      position:absolute;
+      bottom: 0;
+      right: 0;
+      margin-bottom: 3vh;
+      margin-right: 5vh;
+  }
+
+  .bot-if{
+      border: solid black 1px;
+      border-radius: 25px;
+      height:90vh;
+  }

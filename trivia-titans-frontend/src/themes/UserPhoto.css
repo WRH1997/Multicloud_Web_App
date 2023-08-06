@@ -1,0 +1,12 @@
+.userPhoto{
+    top: 10vh;
+    right: 2vh;
+    height: 6vh;
+    width: 6vh;
+    border: solid white 1px;
+    border-radius: 50%;
+}
+
+.userPhoto:hover{
+    cursor: pointer;
+}
